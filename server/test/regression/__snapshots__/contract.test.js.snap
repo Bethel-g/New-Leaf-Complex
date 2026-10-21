@@ -1,0 +1,2755 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Contract: auth > GET /api/auth/me returns the current user with role and department > me 1`] = `
+{
+  "department_id": "<id>",
+  "department_name": "Administration",
+  "email": "admin@newleaf.com",
+  "employee_id": "EMP-001",
+  "id": "<id>",
+  "is_active": true,
+  "name": "System Administrator",
+  "phone": "555-0100",
+  "role_description": "System administrator",
+  "role_id": "<id>",
+  "role_name": "sys_admin",
+}
+`;
+
+exports[`Contract: auth > POST /api/auth/login returns a token plus the user without the hash > login 1`] = `
+{
+  "token": "<secret>",
+  "user": {
+    "created_at": "<timestamp>",
+    "department_id": "<id>",
+    "department_name": "IT Department",
+    "email": "mike.tech@newleaf.com",
+    "employee_id": "EMP-004",
+    "id": "<id>",
+    "is_active": true,
+    "name": "Mike Technician",
+    "phone": "555-0201",
+    "role_id": "<id>",
+    "role_name": "it_staff",
+    "updated_at": "<timestamp>",
+  },
+}
+`;
+
+exports[`Contract: auth > the error envelope for auth failures is a flat message > bad-password 1`] = `
+{
+  "body": {
+    "message": "Invalid credentials",
+  },
+  "status": 401,
+}
+`;
+
+exports[`Contract: auth > the error envelope for auth failures is a flat message > validation 1`] = `
+{
+  "body": {
+    "errors": [
+      {
+        "field": "email",
+        "message": "A valid email is required",
+      },
+      {
+        "field": "password",
+        "message": "Password is required",
+      },
+    ],
+    "message": "A valid email is required",
+  },
+  "status": 400,
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-admin 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-it_staff 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-it_supervisor 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-maintenance_supervisor 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-staff 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > dashboard returns the same envelope for every role > dashboard-envelope-sys_admin 1`] = `
+{
+  "keys": [
+    "avgResolutionTimeDays",
+    "byCategory",
+    "byCategoryIt",
+    "byCategoryMaint",
+    "byDepartment",
+    "closedTickets",
+    "criticalTickets",
+    "inProgressTickets",
+    "itCount",
+    "itCritical",
+    "itOverdue",
+    "itOverdueTickets",
+    "itStatusCounts",
+    "mCount",
+    "mCritical",
+    "mOverdue",
+    "mOverdueTickets",
+    "mStatusCounts",
+    "myAssigned",
+    "myOpenRequests",
+    "myResolvedRequests",
+    "mySuggestions",
+    "openTickets",
+    "overdueCount",
+    "overdueTickets",
+    "range",
+    "recentCompleted",
+    "recentTickets",
+    "recentlyUpdated",
+    "resolvedTickets",
+    "sCount",
+    "totalTickets",
+    "unresolvedTickets",
+  ],
+  "range": {
+    "from": null,
+    "period": "all",
+    "to": null,
+  },
+}
+`;
+
+exports[`Contract: dashboard > the reporting window is echoed back, including a swapped custom range > dashboard-range-month 1`] = `
+{
+  "from": "<timestamp>",
+  "period": "month",
+  "to": null,
+}
+`;
+
+exports[`Contract: dashboard > the reporting window is echoed back, including a swapped custom range > dashboard-range-swapped 1`] = `
+{
+  "from": "<timestamp>",
+  "period": "custom",
+  "to": "<timestamp>",
+}
+`;
+
+exports[`Contract: dashboard > the reporting window is echoed back, including a swapped custom range > dashboard-range-today 1`] = `
+{
+  "from": "<timestamp>",
+  "period": "today",
+  "to": null,
+}
+`;
+
+exports[`Contract: dashboard > the reporting window is echoed back, including a swapped custom range > dashboard-range-week 1`] = `
+{
+  "from": "<timestamp>",
+  "period": "week",
+  "to": null,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/capabilities is a static UI manifest > multimedia-capabilities 1`] = `
+{
+  "body": {
+    "integration": {
+      "description": "Local development integration that simulates a media player. Reports play/stop as supported; power, volume and mute are not supported and are never reported as success.",
+      "id": "mock-local-player",
+      "name": "Mock Local Player Integration",
+      "not_supported_hint": "power,volume,mute,reboot,input_source",
+      "supported_commands": [
+        "play",
+        "stop",
+      ],
+    },
+    "phase2_limitations": [
+      "Emergency broadcast scenarioses handled in a later phase",
+      "Advanced device commands (power, volume, mute, reboot) are not supported by the current integration",
+      "Remote power management is not implemented",
+      "Analytics and reporting dashboard is out of scope for this phase",
+    ],
+    "repeat_types": [
+      "none",
+      "daily",
+      "weekly",
+      "specific_days",
+    ],
+    "supported_command_manifest": [
+      "play",
+      "stop",
+    ],
+    "supported_file_types": {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+    },
+    "supported_statuses": [
+      "online",
+      "offline",
+      "playing",
+      "idle",
+      "error",
+      "disabled",
+    ],
+    "target_types": [
+      "device",
+      "group",
+      "all",
+    ],
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/dashboard envelope > multimedia-dashboard 1`] = `
+{
+  "integration": {
+    "description": "Local development integration that simulates a media player. Reports play/stop as supported; power, volume and mute are not supported and are never reported as success.",
+    "id": "mock-local-player",
+    "name": "Mock Local Player Integration",
+    "not_supported_hint": "power,volume,mute,reboot,input_source",
+    "supported_commands": [
+      "play",
+      "stop",
+    ],
+  },
+  "totals": {
+    "groups": 4,
+    "history_today": 2,
+    "locations": 14,
+    "media": 2,
+    "offline": 1,
+    "online": 3,
+    "playing": 2,
+    "schedules": 0,
+    "total": 6,
+  },
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-audit-shape 1`] = `
+{
+  "shape": {
+    "items": {
+      "item": "object(object keys)",
+      "itemKeys": [
+        "action",
+        "created_at",
+        "details",
+        "entity_id",
+        "entity_type",
+        "id",
+        "updated_at",
+        "user_id",
+        "user_name",
+      ],
+      "length": 1,
+      "type": "array",
+    },
+    "total": "number",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-commands-shape 1`] = `
+{
+  "shape": {
+    "item": "empty",
+    "itemKeys": [],
+    "length": 0,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-devices-shape 1`] = `
+{
+  "shape": {
+    "item": "object(object keys)",
+    "itemKeys": [
+      "connection_type",
+      "created_at",
+      "created_by",
+      "current_media_id",
+      "current_media_started_at",
+      "current_media_title",
+      "department_id",
+      "department_name",
+      "device_identifier",
+      "device_secret_hash",
+      "device_type",
+      "floor",
+      "id",
+      "ip_address",
+      "is_active",
+      "last_heartbeat_at",
+      "location_id",
+      "location_level",
+      "location_name",
+      "manufacturer",
+      "model",
+      "name",
+      "player_identifier",
+      "room",
+      "status",
+      "status_message",
+      "supported_commands",
+      "updated_at",
+      "ward",
+    ],
+    "length": 6,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-groups-shape 1`] = `
+{
+  "shape": {
+    "item": "object(object keys)",
+    "itemKeys": [
+      "active_count",
+      "created_at",
+      "created_by",
+      "description",
+      "device_count",
+      "id",
+      "is_active",
+      "name",
+      "updated_at",
+    ],
+    "length": 4,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-history-shape 1`] = `
+{
+  "shape": {
+    "items": {
+      "item": "object(object keys)",
+      "itemKeys": [
+        "action",
+        "created_at",
+        "device_id",
+        "device_name",
+        "ended_at",
+        "error_message",
+        "id",
+        "media_id",
+        "media_title",
+        "started_at",
+        "status",
+        "triggered_by",
+        "triggered_by_name",
+        "updated_at",
+      ],
+      "length": 3,
+      "type": "array",
+    },
+    "limit": "number",
+    "offset": "number",
+    "total": "number",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-locations-shape 1`] = `
+{
+  "shape": {
+    "item": "object(object keys)",
+    "itemKeys": [
+      "created_at",
+      "description",
+      "device_count",
+      "id",
+      "level",
+      "name",
+      "parent_id",
+      "updated_at",
+    ],
+    "length": 14,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-media-shape 1`] = `
+{
+  "shape": {
+    "items": {
+      "item": "object(object keys)",
+      "itemKeys": [
+        "category",
+        "created_at",
+        "description",
+        "duration_seconds",
+        "file_name",
+        "file_path",
+        "file_size",
+        "file_type",
+        "id",
+        "mime_type",
+        "status",
+        "tags",
+        "title",
+        "updated_at",
+        "uploaded_by",
+        "uploaded_by_name",
+      ],
+      "length": 2,
+      "type": "array",
+    },
+    "limit": "number",
+    "offset": "number",
+    "total": "number",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-mediaCategories-shape 1`] = `
+{
+  "shape": {
+    "item": "string",
+    "itemKeys": [],
+    "length": 2,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-schedules-shape 1`] = `
+{
+  "shape": {
+    "item": "empty",
+    "itemKeys": [],
+    "length": 0,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > GET /api/multimedia/device, group, location and media list envelopes > multimedia-settings-shape 1`] = `
+{
+  "shape": {
+    "item": "object(object keys)",
+    "itemKeys": [
+      "category",
+      "created_at",
+      "description",
+      "id",
+      "is_protected",
+      "key",
+      "updated_at",
+      "value",
+    ],
+    "length": 3,
+    "type": "array",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: multimedia > device rows never expose the device secret, only its hash > multimedia-device-row 1`] = `
+{
+  "connection_type": "ethernet",
+  "created_at": "<timestamp>",
+  "created_by": 3,
+  "current_media_id": null,
+  "current_media_started_at": null,
+  "current_media_title": null,
+  "department_id": "<id>",
+  "department_name": "Outpatient",
+  "device_identifier": "TV-005",
+  "device_secret_hash": "<secret>",
+  "device_type": "display",
+  "floor": "1",
+  "id": "<id>",
+  "ip_address": "10.20.1.15",
+  "is_active": true,
+  "last_heartbeat_at": "<timestamp>",
+  "location_id": "<id>",
+  "location_level": "location",
+  "location_name": "Waiting Area",
+  "manufacturer": "Philips",
+  "model": "BDL",
+  "name": "Lobby Display",
+  "player_identifier": "player-lobby",
+  "room": "Waiting Area",
+  "status": "error",
+  "status_message": "Player application crashed",
+  "supported_commands": "play,stop",
+  "updated_at": "<timestamp>",
+  "ward": null,
+}
+`;
+
+exports[`Contract: multipart and upload rules > rejects disallowed extensions with a stable message > upload-rejected-exe 1`] = `
+{
+  "message": "File type not allowed. Allowed: images, PDF, Office documents and text files. Executable files are blocked.",
+}
+`;
+
+exports[`Contract: multipart and upload rules > rejects disallowed extensions with a stable message > upload-rejected-mime 1`] = `
+{
+  "message": "File type not allowed. Allowed: images, PDF, Office documents and text files. Executable files are blocked.",
+}
+`;
+
+exports[`Contract: multipart and upload rules > rejects disallowed extensions with a stable message > upload-rejected-svg 1`] = `
+{
+  "message": "File type not allowed. Allowed: images, PDF, Office documents and text files. Executable files are blocked.",
+}
+`;
+
+exports[`Contract: notifications > list, unread-count and read envelopes > notification-list 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "entity_id": null,
+      "entity_type": null,
+      "id": "<id>",
+      "is_read": false,
+      "message": "m",
+      "title": "contract probe",
+      "updated_at": "<timestamp>",
+      "user_id": "<id>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: notifications > list, unread-count and read envelopes > notification-mark-read 1`] = `
+{
+  "body": {
+    "message": "Notification marked as read",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: notifications > list, unread-count and read envelopes > notification-mark-read-missing 1`] = `
+{
+  "body": {
+    "message": "Notification not found",
+  },
+  "status": 404,
+}
+`;
+
+exports[`Contract: notifications > list, unread-count and read envelopes > notification-read-all 1`] = `
+{
+  "body": {
+    "message": "All notifications marked as read",
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: notifications > list, unread-count and read envelopes > notification-unread-count 1`] = `
+{
+  "body": {
+    "count": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/categories — the full it/maintenance taxonomy > categories-all 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Computer",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Email",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Hardware",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Hospital Software",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Internet",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Network",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Other",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Password",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Printer",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Software",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Telephone",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "User Account",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Air Conditioning",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Building",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Door/Window",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Electrical",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Furniture",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Generator",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Lighting",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Medical Equipment",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Other",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Plumbing",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Water",
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/categories?type=it > categories-it 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Computer",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Email",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Hardware",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Hospital Software",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Internet",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Network",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Other",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Password",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Printer",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Software",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Telephone",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "User Account",
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/departments > departments 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Administration",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Emergency",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "IT Department",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Laboratory",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Nursing",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Outpatient",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Pharmacy",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Radiology",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": null,
+      "id": "<id>",
+      "name": "Surgery",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/priorities — level order is the escalation order > priorities 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "level": 1,
+      "name": "Low",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "level": 2,
+      "name": "Medium",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "level": 3,
+      "name": "High",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "level": 4,
+      "name": "Critical",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/roles > roles 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "description": "Hospital administrator",
+      "id": "<id>",
+      "name": "admin",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "IT support technician",
+      "id": "<id>",
+      "name": "it_staff",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "IT department supervisor",
+      "id": "<id>",
+      "name": "it_supervisor",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "Maintenance technician",
+      "id": "<id>",
+      "name": "maintenance_staff",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "Maintenance department supervisor",
+      "id": "<id>",
+      "name": "maintenance_supervisor",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "Hospital staff member",
+      "id": "<id>",
+      "name": "staff",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "description": "System administrator",
+      "id": "<id>",
+      "name": "sys_admin",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/settings — key, value, category and protection flag > settings 1`] = `
+{
+  "body": [
+    {
+      "category": "general",
+      "created_at": "<timestamp>",
+      "description": "Display name of the system",
+      "id": "<id>",
+      "is_protected": true,
+      "key": "system_name",
+      "updated_at": "<timestamp>",
+      "value": "New Leaf Complex Operations System",
+    },
+    {
+      "category": "multimedia",
+      "created_at": "<timestamp>",
+      "description": "Allow it_staff to send device commands (default off, configurable)",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "multimedia_allow_it_staff_commands",
+      "updated_at": "<timestamp>",
+      "value": "false",
+    },
+    {
+      "category": "multimedia",
+      "created_at": "<timestamp>",
+      "description": "Maximum number of devices supported by the initial deployment",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "multimedia_device_limit",
+      "updated_at": "<timestamp>",
+      "value": "100",
+    },
+    {
+      "category": "multimedia",
+      "created_at": "<timestamp>",
+      "description": "Minutes without a device heartbeat before it is marked offline",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "multimedia_heartbeat_timeout_minutes",
+      "updated_at": "<timestamp>",
+      "value": "3",
+    },
+    {
+      "category": "security",
+      "created_at": "<timestamp>",
+      "description": "JWT/session lifetime in minutes (24h default)",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "session_timeout_minutes",
+      "updated_at": "<timestamp>",
+      "value": "480",
+    },
+    {
+      "category": "uploads",
+      "created_at": "<timestamp>",
+      "description": "Maximum upload size per attachment (MB)",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "max_attachment_mb",
+      "updated_at": "<timestamp>",
+      "value": "10",
+    },
+    {
+      "category": "uploads",
+      "created_at": "<timestamp>",
+      "description": "Maximum number of attachments per request",
+      "id": "<id>",
+      "is_protected": false,
+      "key": "max_attachments",
+      "updated_at": "<timestamp>",
+      "value": "5",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/statuses — all three workflows and their sort order > statuses-all 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "New",
+      "sort_order": 0,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Submitted",
+      "sort_order": 0,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "New",
+      "sort_order": 0,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Under Review",
+      "sort_order": 1,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 1,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 1,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Accepted",
+      "sort_order": 2,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Inspection",
+      "sort_order": 2,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "In Progress",
+      "sort_order": 2,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Waiting for Information",
+      "sort_order": 3,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "In Progress",
+      "sort_order": 3,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 3,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implementation",
+      "sort_order": 4,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Resolved",
+      "sort_order": 4,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Waiting for Parts",
+      "sort_order": 4,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Completed",
+      "sort_order": 5,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 5,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implemented",
+      "sort_order": 5,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 6,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 6,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Rejected",
+      "sort_order": 7,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Needs More Information",
+      "sort_order": 8,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Already Planned",
+      "sort_order": 9,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Forwarded to Department",
+      "sort_order": 10,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/statuses?type=it / maintenance / suggestion > statuses-it 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "New",
+      "sort_order": 0,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 1,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "In Progress",
+      "sort_order": 2,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Waiting for Information",
+      "sort_order": 3,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Resolved",
+      "sort_order": 4,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 5,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/statuses?type=it / maintenance / suggestion > statuses-maintenance 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "New",
+      "sort_order": 0,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 1,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Inspection",
+      "sort_order": 2,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "In Progress",
+      "sort_order": 3,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Waiting for Parts",
+      "sort_order": 4,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Completed",
+      "sort_order": 5,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 6,
+      "type": "maintenance",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: reference data (values are pinned) > GET /api/admin/statuses?type=it / maintenance / suggestion > statuses-suggestion 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Submitted",
+      "sort_order": 0,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Under Review",
+      "sort_order": 1,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Accepted",
+      "sort_order": 2,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 3,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implementation",
+      "sort_order": 4,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implemented",
+      "sort_order": 5,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 6,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Rejected",
+      "sort_order": 7,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Needs More Information",
+      "sort_order": 8,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Already Planned",
+      "sort_order": 9,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Forwarded to Department",
+      "sort_order": 10,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: suggestions > GET /api/suggestions — paginated envelope > suggestion-list-admin 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "suggestions": [
+      {
+        "assigned_department_id": null,
+        "assigned_department_name": null,
+        "assigned_to": null,
+        "assignee_name": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "expected_benefit": "b",
+        "id": "<id>",
+        "problem": "p",
+        "proposed_solution": "s",
+        "status_id": "<id>",
+        "status_name": "Submitted",
+        "suggestion_number": "S-0001",
+        "title": "Contract probe suggestion",
+        "updated_at": "<timestamp>",
+        "user_id": "<id>",
+        "user_name": "Fatima Nurse",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: suggestions > GET /api/suggestions — paginated envelope > suggestion-list-author 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "suggestions": [
+      {
+        "assigned_department_id": null,
+        "assigned_department_name": null,
+        "assigned_to": null,
+        "assignee_name": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "expected_benefit": "b",
+        "id": "<id>",
+        "problem": "p",
+        "proposed_solution": "s",
+        "status_id": "<id>",
+        "status_name": "Submitted",
+        "suggestion_number": "S-0001",
+        "title": "Contract probe suggestion",
+        "updated_at": "<timestamp>",
+        "user_id": "<id>",
+        "user_name": "Fatima Nurse",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: suggestions > GET /api/suggestions/:id — detail envelope > suggestion-detail 1`] = `
+{
+  "attachments": [],
+  "comments": [],
+  "history": [
+    {
+      "action": "created",
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "new_value": "S-0001 created with status Submitted",
+      "old_value": null,
+      "suggestion_id": "<id>",
+      "updated_at": "<timestamp>",
+      "user_id": "<id>",
+      "user_name": "Fatima Nurse",
+    },
+  ],
+  "statuses": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Submitted",
+      "sort_order": 0,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Under Review",
+      "sort_order": 1,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Accepted",
+      "sort_order": 2,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 3,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implementation",
+      "sort_order": 4,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Implemented",
+      "sort_order": 5,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 6,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Rejected",
+      "sort_order": 7,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Needs More Information",
+      "sort_order": 8,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Already Planned",
+      "sort_order": 9,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Forwarded to Department",
+      "sort_order": 10,
+      "type": "suggestion",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "suggestion": {
+    "allowed_statuses": [
+      "Under Review",
+      "Rejected",
+      "Needs More Information",
+      "Already Planned",
+      "Forwarded to Department",
+    ],
+    "assigned_department_id": null,
+    "assigned_department_name": null,
+    "assigned_to": null,
+    "assignee_name": null,
+    "created_at": "<timestamp>",
+    "department_id": "<id>",
+    "department_name": "Nursing",
+    "expected_benefit": "b",
+    "id": "<id>",
+    "problem": "p",
+    "proposed_solution": "s",
+    "status_id": "<id>",
+    "status_name": "Submitted",
+    "suggestion_number": "S-0001",
+    "title": "Contract probe suggestion",
+    "updated_at": "<timestamp>",
+    "user_email": "fatima.nurse@newleaf.com",
+    "user_id": "<id>",
+    "user_name": "Fatima Nurse",
+  },
+}
+`;
+
+exports[`Contract: suggestions > comment and update envelopes > suggestion-comment 1`] = `
+{
+  "body": {
+    "id": "<id>",
+  },
+  "status": 201,
+}
+`;
+
+exports[`Contract: suggestions > comment and update envelopes > suggestion-update-bad-status 1`] = `
+{
+  "body": {
+    "message": "Invalid suggestion status",
+  },
+  "status": 400,
+}
+`;
+
+exports[`Contract: tickets > GET /api/tickets — paginated envelope with total/page/limit > ticket-list-admin 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > GET /api/tickets — paginated envelope with total/page/limit > ticket-list-staff 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > GET /api/tickets/:id — detail with comments, attachments, history, work notes, statuses > ticket-detail 1`] = `
+{
+  "attachments": [],
+  "comments": [],
+  "history": [
+    {
+      "action": "created",
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "new_value": "Ticket created with status New",
+      "old_value": null,
+      "ticket_id": "<id>",
+      "updated_at": "<timestamp>",
+      "user_id": "<id>",
+      "user_name": "Fatima Nurse",
+    },
+  ],
+  "statuses": [
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "New",
+      "sort_order": 0,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Assigned",
+      "sort_order": 1,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "In Progress",
+      "sort_order": 2,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Waiting for Information",
+      "sort_order": 3,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Resolved",
+      "sort_order": 4,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+    {
+      "created_at": "<timestamp>",
+      "id": "<id>",
+      "name": "Closed",
+      "sort_order": 5,
+      "type": "it",
+      "updated_at": "<timestamp>",
+    },
+  ],
+  "ticket": {
+    "assigned_to": null,
+    "assignee_name": null,
+    "category_id": "<id>",
+    "category_name": "Computer",
+    "closed_date": null,
+    "contact_info": null,
+    "created_at": "<timestamp>",
+    "department_id": "<id>",
+    "department_name": "Nursing",
+    "description": "shape check",
+    "equipment_name": null,
+    "id": "<id>",
+    "location": "Ward B",
+    "priority_id": "<id>",
+    "priority_level": 3,
+    "priority_name": "High",
+    "requester_email": "fatima.nurse@newleaf.com",
+    "requester_id": "<id>",
+    "requester_name": "Fatima Nurse",
+    "requester_phone": "555-0400",
+    "resolution_notes": null,
+    "resolved_date": null,
+    "status_id": "<id>",
+    "status_name": "New",
+    "ticket_number": "IT-0001",
+    "title": "Contract probe ticket",
+    "type": "it",
+    "updated_at": "<timestamp>",
+  },
+  "workNotes": [],
+}
+`;
+
+exports[`Contract: tickets > POST /api/tickets/:id/attachments envelope > ticket-attachment-upload 1`] = `
+{
+  "body": {
+    "message": "Attachments uploaded",
+  },
+  "status": 201,
+}
+`;
+
+exports[`Contract: tickets > POST /api/tickets/:id/comments and /work-notes envelopes > ticket-comment 1`] = `
+{
+  "body": {
+    "id": "<id>",
+  },
+  "status": 201,
+}
+`;
+
+exports[`Contract: tickets > POST /api/tickets/:id/comments and /work-notes envelopes > ticket-work-note 1`] = `
+{
+  "body": {
+    "id": "<id>",
+  },
+  "status": 201,
+}
+`;
+
+exports[`Contract: tickets > POST /api/tickets/:id/comments and /work-notes envelopes > ticket-work-note-forbidden 1`] = `
+{
+  "body": {
+    "message": "Insufficient permissions",
+  },
+  "status": 403,
+}
+`;
+
+exports[`Contract: tickets > every documented filter is accepted and echoed back consistently > filter-location 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > every documented filter is accepted and echoed back consistently > filter-priority 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > every documented filter is accepted and echoed back consistently > filter-search 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > every documented filter is accepted and echoed back consistently > filter-status 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > every documented filter is accepted and echoed back consistently > filter-type 1`] = `
+{
+  "body": {
+    "limit": 20,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > pagination clamps the limit and echoes the effective page > ticket-list-clamped 1`] = `
+{
+  "body": {
+    "limit": 500,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > pagination clamps the limit and echoes the effective page > ticket-list-page1-limit5 1`] = `
+{
+  "body": {
+    "limit": 5,
+    "page": 1,
+    "tickets": [
+      {
+        "assigned_to": null,
+        "assignee_name": null,
+        "category_id": "<id>",
+        "category_name": "Computer",
+        "closed_date": null,
+        "contact_info": null,
+        "created_at": "<timestamp>",
+        "department_id": "<id>",
+        "department_name": "Nursing",
+        "description": "shape check",
+        "equipment_name": null,
+        "id": "<id>",
+        "location": "Ward B",
+        "priority_id": "<id>",
+        "priority_level": 3,
+        "priority_name": "High",
+        "requester_id": "<id>",
+        "requester_name": "Fatima Nurse",
+        "resolution_notes": null,
+        "resolved_date": null,
+        "status_id": "<id>",
+        "status_name": "New",
+        "ticket_number": "IT-0001",
+        "title": "Contract probe ticket",
+        "type": "it",
+        "updated_at": "<timestamp>",
+      },
+    ],
+    "total": 1,
+  },
+  "status": 200,
+}
+`;
+
+exports[`Contract: tickets > validation and 404 envelopes > ticket-create-bad-priority 1`] = `
+{
+  "body": {
+    "message": "Invalid priority",
+  },
+  "status": 400,
+}
+`;
+
+exports[`Contract: tickets > validation and 404 envelopes > ticket-create-category-type-mismatch 1`] = `
+{
+  "body": {
+    "errors": [
+      {
+        "field": "title",
+        "message": "Title must be 2-255 characters",
+      },
+    ],
+    "message": "Title must be 2-255 characters",
+  },
+  "status": 400,
+}
+`;
+
+exports[`Contract: tickets > validation and 404 envelopes > ticket-create-validation 1`] = `
+{
+  "body": {
+    "errors": [
+      {
+        "field": "category_id",
+        "message": "A valid category is required",
+      },
+      {
+        "field": "title",
+        "message": "Title must be 2-255 characters",
+      },
+    ],
+    "message": "A valid category is required",
+  },
+  "status": 400,
+}
+`;
+
+exports[`Contract: tickets > validation and 404 envelopes > ticket-missing 1`] = `
+{
+  "body": {
+    "message": "Ticket not found",
+  },
+  "status": 404,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > GET /api/users roster shape > users-roster 1`] = `
+{
+  "body": [
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Maintenance",
+      "email": "ahmed.maint@newleaf.com",
+      "employee_id": "EMP-006",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Ahmed Maint Supervisor",
+      "phone": "555-0300",
+      "role_name": "maintenance_supervisor",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Maintenance",
+      "email": "ali.maint@newleaf.com",
+      "employee_id": "EMP-007",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Ali Maint Tech",
+      "phone": "555-0301",
+      "role_name": "maintenance_staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Nursing",
+      "email": "fatima.nurse@newleaf.com",
+      "employee_id": "EMP-008",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Fatima Nurse",
+      "phone": "555-0400",
+      "role_name": "staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Administration",
+      "email": "hospital.admin@newleaf.com",
+      "employee_id": "EMP-002",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Hospital Administrator",
+      "phone": "555-0101",
+      "role_name": "admin",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "IT Department",
+      "email": "john.it@newleaf.com",
+      "employee_id": "EMP-003",
+      "id": "<id>",
+      "is_active": true,
+      "name": "John IT Supervisor",
+      "phone": "555-0200",
+      "role_name": "it_supervisor",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Laboratory",
+      "email": "layla.lab@newleaf.com",
+      "employee_id": "EMP-010",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Layla Lab Tech",
+      "phone": "555-0500",
+      "role_name": "staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "IT Department",
+      "email": "mike.tech@newleaf.com",
+      "employee_id": "EMP-004",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Mike Technician",
+      "phone": "555-0201",
+      "role_name": "it_staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Emergency",
+      "email": "omar.doctor@newleaf.com",
+      "employee_id": "EMP-009",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Omar Doctor",
+      "phone": "555-0800",
+      "role_name": "staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "IT Department",
+      "email": "sarah.tech@newleaf.com",
+      "employee_id": "EMP-005",
+      "id": "<id>",
+      "is_active": true,
+      "name": "Sarah IT Tech",
+      "phone": "555-0202",
+      "role_name": "it_staff",
+    },
+    {
+      "created_at": "<timestamp>",
+      "department_name": "Administration",
+      "email": "admin@newleaf.com",
+      "employee_id": "EMP-001",
+      "id": "<id>",
+      "is_active": true,
+      "name": "System Administrator",
+      "phone": "555-0100",
+      "role_name": "sys_admin",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > GET /api/users/staff shape > staff-list 1`] = `
+{
+  "body": [
+    {
+      "department_name": "Nursing",
+      "employee_id": "EMP-008",
+      "id": "<id>",
+      "name": "Fatima Nurse",
+    },
+    {
+      "department_name": "Laboratory",
+      "employee_id": "EMP-010",
+      "id": "<id>",
+      "name": "Layla Lab Tech",
+    },
+    {
+      "department_name": "Emergency",
+      "employee_id": "EMP-009",
+      "id": "<id>",
+      "name": "Omar Doctor",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > GET /api/users/technicians shapes per type > technicians-it 1`] = `
+{
+  "body": [
+    {
+      "department_name": "IT Department",
+      "employee_id": "EMP-003",
+      "id": "<id>",
+      "name": "John IT Supervisor",
+    },
+    {
+      "department_name": "IT Department",
+      "employee_id": "EMP-004",
+      "id": "<id>",
+      "name": "Mike Technician",
+    },
+    {
+      "department_name": "IT Department",
+      "employee_id": "EMP-005",
+      "id": "<id>",
+      "name": "Sarah IT Tech",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > GET /api/users/technicians shapes per type > technicians-maintenance 1`] = `
+{
+  "body": [
+    {
+      "department_name": "Maintenance",
+      "employee_id": "EMP-006",
+      "id": "<id>",
+      "name": "Ahmed Maint Supervisor",
+    },
+    {
+      "department_name": "Maintenance",
+      "employee_id": "EMP-007",
+      "id": "<id>",
+      "name": "Ali Maint Tech",
+    },
+  ],
+  "status": 200,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > mutation envelopes > user-create 1`] = `
+{
+  "body": {
+    "id": "<id>",
+    "message": "User created",
+  },
+  "status": 201,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > mutation envelopes > user-delete 1`] = `
+{
+  "body": {
+    "message": "Server error",
+  },
+  "status": 500,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > mutation envelopes > user-password 1`] = `
+{
+  "body": {
+    "message": "Server error",
+  },
+  "status": 500,
+}
+`;
+
+exports[`Contract: user administration (shape pinned, ids masked) > mutation envelopes > user-update 1`] = `
+{
+  "body": {
+    "message": "Server error",
+  },
+  "status": 500,
+}
+`;
