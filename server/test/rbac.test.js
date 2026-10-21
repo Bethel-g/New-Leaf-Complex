@@ -271,6 +271,28 @@ describe('RBAC (role-based access control)', () => {
     expect(adminDash.totalTickets).toBe(3);
   }, 60000);
 
+  it('exposes only non-sensitive settings to any signed-in user', async () => {
+    const staff = await loginAs('staff');
+    const sys = await loginAs('sys_admin');
+
+    const publicKeys = [
+      'system_name', 'hospital_name', 'hospital_address', 'hospital_phone', 'hospital_email',
+      'appearance_accent', 'appearance_density', 'appearance_show_requester',
+    ];
+
+    for (const session of [staff, sys]) {
+      const res = await call(session.token, 'get', '/admin/public-settings');
+      expect(res.status).toBe(200);
+      expect(Object.keys(res.body).every((k) => publicKeys.includes(k))).toBe(true);
+      // Administrator-level settings never leak to the public payload.
+      expect(res.body).not.toHaveProperty('multimedia_allow_it_staff_commands');
+      expect(res.body).not.toHaveProperty('multimedia_device_limit');
+    }
+
+    // Unauthenticated callers get nothing.
+    expect((await call(null, 'get', '/admin/public-settings')).status).toBe(401);
+  });
+
   it('rejects requests without a token (401) on protected routes', async () => {
     const paths = [
       '/tickets', '/tickets/1', '/suggestions', '/dashboard',

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge, statusColor, priorityColor } from './Badge';
+import { useSettings } from '../context/SettingsContext';
 
 // oxlint-disable-next-line react/only-export-components
 export function formatDate(dateStr) {
@@ -21,11 +22,13 @@ export default function TicketTable({
   tickets, type,
   selectable = false, selectedIds = [], onToggle, onToggleAll, canSelect,
 }) {
+  const { appearance } = useSettings();
+  const showRequester = appearance?.showRequester ?? true;
   const linkBase = type === 'it' ? '/it/tickets' : '/maintenance/tickets';
   const selected = new Set(selectedIds);
   const selectableIds = tickets.filter((t) => (canSelect ? canSelect(t) : true)).map((t) => t.id);
   const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selected.has(id));
-  const colCount = selectable ? 7 : 6;
+  const colCount = (selectable ? 1 : 0) + 6 + (showRequester ? 1 : 0);
 
   return (
     <div className="overflow-x-auto">
@@ -44,6 +47,9 @@ export default function TicketTable({
               </th>
             )}
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ticket</th>
+            {showRequester && (
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Requester</th>
+            )}
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
@@ -81,6 +87,9 @@ export default function TicketTable({
                   </Link>
                   <div className="text-xs text-gray-500 max-w-[200px] truncate">{t.title}</div>
                 </td>
+                {showRequester && (
+                  <td className="px-4 py-3 text-sm text-gray-600">{t.requester_name || '-'}</td>
+                )}
                 <td className="px-4 py-3 text-sm text-gray-600">{t.category_name}</td>
                 <td className="px-4 py-3">
                   <Badge color={priorityColor(t.priority_name)}>{t.priority_name}</Badge>

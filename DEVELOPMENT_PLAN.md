@@ -107,9 +107,11 @@ Current state:
 - UI: notification list page + top-bar unread badge (polls every 30s + on window focus) — Done.
 
 Remaining work:
-- Add `type` + `entity_type`/`entity_id` to notifications so items deep-link to the source (ticket/suggestion detail).
-- Add pagination on `GET /notifications` (currently capped at 50).
-- Notification preferences (per-user opt-outs) if required; email push later.
+- Add `type` + `entity_type`/`entity_id` to notifications so items deep-link to the source (ticket/suggestion detail) — **Done**
+  (`20240101000007_notification_task_links`; the notification list and detail resolve the linked task).
+- Add pagination on `GET /notifications` (currently capped at 50) — **Still open**; the list remains capped.
+- Notification preferences (per-user opt-outs) — **Done** (`user_preferences`, `GET/PUT /notifications/preferences`);
+  email push later.
 
 ---
 
@@ -122,8 +124,9 @@ Current state:
 - UI dashboards for staff, IT, maintenance, admin; admin `Reports` with charts (recharts) and CSV export, average resolution time, overdue detection — Done.
 
 Remaining work:
-- Report data currently aggregates in memory on the client; move heavier reports to server endpoints (`/api/reports`) with date-range filters.
-- Add charts for suggestions and per-user/per-category workload; trend over time.
+- Report data currently aggregates in memory on the client; move heavier reports to server endpoints (`/api/reports`) with date-range filters — **Still open**.
+- Add charts for suggestions and per-user/per-category workload; trend over time — **Done** (Admin dashboard workload
+  and review panels; Reports adds an over-time trend and top-requester breakdown).
 - Note: role-scoping of dashboard counts was addressed in the auth/RBAC hardening phase (counts are now computed against the caller's role scope).
 
 ---
@@ -138,9 +141,13 @@ Current state:
 - Admin UI `ActivityLog` page (latest 100) — Done.
 
 Remaining work:
-- Log user CRUD (create/update/delete, admin reset password), department/category CRUD, suggestion status changes, and failed login attempts.
-- Store contextual data (IP address, user agent) and a `performed_by` in addition to `user_id`.
-- Add pagination + filters (action type, user, date range) to the activity-log endpoint.
+- Log user CRUD (create/update/delete, admin reset password), department/category CRUD, and suggestion status changes —
+  **Partial**: auth events, failed logins and self-service profile updates are audited; admin CRUD logging is still open.
+- Store contextual data (IP address, user agent) and a `performed_by` in addition to `user_id` — **Partial**:
+  `activity_logs.ip_address` is captured (`20240101000008_profile_audit_prefs`) and returned by the audit API;
+  user-agent and `performed_by` are not stored.
+- Add pagination + filters (action type, user, date range) to the activity-log endpoint — **Done** (`GET /admin/activity-logs`
+  supports action/user/date filters and exposes the IP; `GET /admin/recent-activity` is the admin-safe dashboard feed).
 
 ---
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Settings, Save, Lock, Loader2, Timer, SlidersHorizontal, Building2 } from 'lucide-react';
+import { Settings, Save, Lock, Loader2, Timer, SlidersHorizontal, Building2, Palette } from 'lucide-react';
 import api from '../../services/api';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
+import { useSettings } from '../../context/SettingsContext';
+import { ACCENT_OPTIONS, DENSITY_OPTIONS } from '../../config/appearance';
 
 // Configurable settings that drive real behaviour. Each section is saved as a
 // unit: a key that does not exist yet is created on first save.
@@ -42,6 +44,17 @@ const SECTIONS = [
       { key: 'notify_new_critical', label: 'Alert administrators when a Critical request is raised', type: 'toggle' },
     ],
   },
+  {
+    title: 'Appearance',
+    description: 'Brand accent and layout density applied across the application.',
+    icon: Palette,
+    category: 'appearance',
+    fields: [
+      { key: 'appearance_accent', label: 'Brand accent', type: 'select', options: ACCENT_OPTIONS },
+      { key: 'appearance_density', label: 'Layout density', type: 'select', options: DENSITY_OPTIONS },
+      { key: 'appearance_show_requester', label: 'Show the requester column in request tables', type: 'toggle' },
+    ],
+  },
 ];
 
 const DEFAULTS = {
@@ -52,6 +65,9 @@ const DEFAULTS = {
   require_resolution_notes: 'true',
   allow_requester_closure: 'true',
   notify_new_critical: 'false',
+  appearance_accent: 'blue',
+  appearance_density: 'comfortable',
+  appearance_show_requester: 'true',
 };
 
 const KNOWN_KEYS = new Set(SECTIONS.flatMap((s) => s.fields.map((f) => f.key)));
@@ -67,6 +83,7 @@ function groupByCategory(settings) {
 }
 
 export default function SystemSettings() {
+  const { refresh } = useSettings();
   const [settings, setSettings] = useState([]);
   const [values, setValues] = useState({});
   const [loading, setLoading] = useState(true);
@@ -104,6 +121,7 @@ export default function SystemSettings() {
       }
       toast.success(`${section.title} saved`);
       loadData();
+      refresh();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save settings');
     } finally {
@@ -116,6 +134,7 @@ export default function SystemSettings() {
     try {
       await api.put(`/admin/settings/${encodeURIComponent(s.key)}`, { value: values[s.key] });
       toast.success(`${s.key} updated`);
+      refresh();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update setting');
     } finally {
@@ -178,6 +197,17 @@ export default function SystemSettings() {
                           />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-primary-600 transition-colors relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5" />
                         </label>
+                      ) : field.type === 'select' ? (
+                        <select
+                          id={`setting-${field.key}`}
+                          value={values[field.key] ?? DEFAULTS[field.key] ?? ''}
+                          onChange={(e) => setValue(field.key, e.target.value)}
+                          className="w-full sm:w-72 px-3 py-2 rounded-lg border border-gray-300 text-sm bg-white focus:ring-2 focus:ring-primary-500 outline-none"
+                        >
+                          {field.options.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
                       ) : (
                         <input
                           id={`setting-${field.key}`}

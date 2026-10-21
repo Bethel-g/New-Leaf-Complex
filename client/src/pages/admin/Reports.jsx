@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import api from '../../services/api';
 import StatCard from '../../components/StatCard';
+import PrintHeader from '../../components/PrintHeader';
 import { Badge, statusColor, priorityColor } from '../../components/Badge';
 import { formatDate } from '../../components/TicketTable';
 import { downloadCSV } from '../../utils/csv';
@@ -119,7 +120,8 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <PrintHeader title="Operations Report" />
+      <div className="flex items-center justify-between print:hidden">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">Reports</h2>
           <p className="text-gray-500 text-sm">Generate management reports</p>

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SettingsProvider } from './context/SettingsContext';
 import Login from './pages/auth/Login';
 import Layout from './components/Layout';
 import StaffDashboard from './pages/staff/StaffDashboard';
@@ -128,10 +129,12 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Toaster position="top-right" />
-        <AppRoutes />
-      </Router>
+      <SettingsProvider>
+        <Router>
+          <Toaster position="top-right" />
+          <AppRoutes />
+        </Router>
+      </SettingsProvider>
     </AuthProvider>
   );
 }

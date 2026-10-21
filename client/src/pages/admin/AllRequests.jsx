@@ -5,6 +5,7 @@ import api from '../../services/api';
 import { Badge, statusColor, priorityColor } from '../../components/Badge';
 import { formatDate, ticketKind } from '../../components/TicketTable';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
+import PrintHeader from '../../components/PrintHeader';
 
 export default function AllRequests() {
   const [tickets, setTickets] = useState([]);
@@ -93,7 +94,8 @@ export default function AllRequests() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <PrintHeader title="All Requests" />
+      <div className="flex items-center justify-between print:hidden">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">All Requests</h2>
           <p className="text-gray-500 text-sm">View all tickets and suggestions across the hospital</p>
@@ -108,7 +110,7 @@ export default function AllRequests() {
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2 border-b border-gray-200 print:hidden">
         {['all', 'it', 'maintenance', 'suggestion'].map((t) => (
           <button
             key={t}
@@ -122,7 +124,7 @@ export default function AllRequests() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-4 print:hidden">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <div className="col-span-2 md:col-span-2 relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />

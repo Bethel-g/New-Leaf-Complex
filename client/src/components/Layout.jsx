@@ -8,6 +8,7 @@ import {
   UserCheck, Settings, CalendarClock, Search, MonitorPlay, Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import api from '../services/api';
 import { getNavGroups } from '../config/navigation';
 import { ticketKind } from './TicketTable';
@@ -44,6 +45,7 @@ const NAV_ICONS = {
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { publicSettings } = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,17 +54,9 @@ export default function Layout() {
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [signageOffline, setSignageOffline] = useState(null);
-  const [hospitalName, setHospitalName] = useState('New Leaf Complex');
 
+  const hospitalName = publicSettings.hospital_name || 'New Leaf Complex';
   const showSignage = ['it_staff', 'it_supervisor', 'admin', 'sys_admin'].includes(user?.role_name);
-
-  useEffect(() => {
-    api.get('/admin/public-settings')
-      .then((res) => {
-        if (res.data?.hospital_name) setHospitalName(res.data.hospital_name);
-      })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const loadUnread = () => {
@@ -183,14 +177,14 @@ export default function Layout() {
       {/* Desktop sidebar */}
       <aside
         aria-label="Sidebar"
-        className="hidden lg:block fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-primary-900 via-primary-950 to-slate-950 z-30 border-r border-white/5"
+        className="hidden lg:block print:hidden fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-primary-900 via-primary-950 to-slate-950 z-30 border-r border-white/5"
       >
         {renderNav('Main navigation')}
       </aside>
 
       {/* Mobile sidebar */}
       {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-40">
+        <div className="lg:hidden print:hidden fixed inset-0 z-40">
           <div
             className="absolute inset-0 bg-primary-950/60 backdrop-blur-sm animate-fade-in"
             onClick={() => setSidebarOpen(false)}
@@ -208,9 +202,9 @@ export default function Layout() {
       )}
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 print:pl-0">
         {/* Top bar */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/70 sticky top-0 z-20 shadow-sm shadow-slate-900/5">
+        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/70 sticky top-0 z-20 shadow-sm shadow-slate-900/5 print:hidden">
           <div className="flex items-center justify-between px-4 sm:px-6 py-3">
             <div className="flex items-center gap-3">
               <button aria-label="Open navigation menu" aria-expanded={sidebarOpen} className="lg:hidden text-gray-600 p-1.5 rounded-lg hover:bg-gray-100" onClick={() => setSidebarOpen(true)}>
@@ -220,7 +214,7 @@ export default function Layout() {
                 <h1 className="text-lg font-semibold text-gray-800 leading-tight">{hospitalName}</h1>
                 <p className="text-xs text-gray-400">Operations System</p>
               </div>
-              <h1 className="sm:hidden text-lg font-semibold text-gray-800">New Leaf Complex</h1>
+              <h1 className="sm:hidden text-lg font-semibold text-gray-800">{hospitalName}</h1>
             </div>
 
             {/* Global search — jumps to the first matching request or suggestion */}
@@ -305,7 +299,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="p-4 sm:p-6 max-w-7xl mx-auto">
+        <main className="p-4 sm:p-6 max-w-7xl mx-auto print:p-0 print:max-w-none">
           <div key={location.pathname} className="animate-fade-in">
             <Outlet />
           </div>

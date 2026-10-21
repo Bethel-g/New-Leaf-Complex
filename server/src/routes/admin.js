@@ -44,9 +44,10 @@ router.get('/statuses', async (req, res) => {
   }
 });
 
-// Non-sensitive branding settings any signed-in user may read (header, reports).
+// Non-sensitive settings (branding, appearance) any signed-in user may read.
 const PUBLIC_SETTING_KEYS = [
   'system_name', 'hospital_name', 'hospital_address', 'hospital_phone', 'hospital_email',
+  'appearance_accent', 'appearance_density', 'appearance_show_requester',
 ];
 
 router.get('/public-settings', async (req, res) => {

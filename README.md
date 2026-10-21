@@ -5,6 +5,22 @@ maintenance **tickets** and **improvement suggestions**; supervisors manage work
 technicians record work, and administrators track everything through role-scoped dashboards
 and a searchable history with an audit trail.
 
+## Contents
+
+- [Stack](#stack)
+- [Repository layout](#repository-layout)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Running in development](#running-in-development)
+- [Database scripts](#database-scripts-from-server)
+- [Tests](#tests)
+- [Documentation](#documentation)
+- [Building for production](#building-for-production)
+- [API overview](#api-overview)
+- [System settings](#system-settings)
+- [Digital Signage module](#digital-signage-module-multimedia-control)
+- [Security notes](#security-notes)
+
 ## Stack
 
 | Layer | Technology |
@@ -119,11 +135,18 @@ Open http://localhost:3000.
 | `npm run migrate:fresh` | Roll back **all** migrations, re-migrate, re-seed |
 | `npm run test:setup` | Same cycle against the `test` environment (`newleaf_test`) |
 
-There are 7 migrations. Two share the `20240101000002` prefix (`extend_ticket_dates`,
-`system_settings`); Knex applies them lexicographically and they are independent. The last
-migration, `20240101000006_multimedia_module`, adds the Digital Signage module (10 tables:
-locations, media assets, devices, groups, group membership, playback assignments, schedules,
-playback history, device commands, audit log).
+There are 9 migrations. Two share the `20240101000002` prefix (`extend_ticket_dates`,
+`system_settings`); Knex applies them lexicographically and they are independent. The
+migrations add, in order:
+
+- `20240101000006_multimedia_module` — Digital Signage module (10 tables: locations, media
+  assets, devices, groups, group membership, playback assignments, schedules, playback history,
+  device commands, audit log).
+- `20240101000007_notification_task_links` — `entity_type` / `entity_id` on `notifications`, so a
+  notification links to the ticket or suggestion it is about.
+- `20240101000008_profile_audit_prefs` — `ip_address` on `activity_logs` and a
+  `user_preferences` table (per-user notification opt-outs). Preferences live in their own table
+  so the `users` projection returned by login and `/auth/me` never changes shape.
 
 ## Tests
 
@@ -133,13 +156,13 @@ npm run test:setup     # rebuild the test DB (rollback → migrate → seed, tes
 npm test               # vitest run — full API integration suite
 ```
 
-See [TESTING.md](TESTING.md) for a detailed breakdown of the six suites.
+See [TESTING.md](TESTING.md) for a detailed breakdown of the functional and regression suites.
 
 ## Documentation
 
 | Document | Contents |
 | --- | --- |
-| [README.md](README.md) | Setup, seeded accounts, API surface, security notes |
+| This README | Setup, seeded accounts, API surface, operations, deployment, and security notes |
 | [docs/BUSINESS_FLOW.md](docs/BUSINESS_FLOW.md) | Full business-flow reference: roles, ticket and suggestion lifecycles, permissions, notifications, collaboration, payloads, frontend flows |
 | [PROJECT_ARCHITECTURE.md](PROJECT_ARCHITECTURE.md) | Technical architecture and design decisions |
 | [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | Feature roadmap and scope history |
@@ -163,18 +186,19 @@ on `PORT` (default 5000).
 
 ## API overview
 
-Everything is under `/api` and authenticated with `Authorization: Bearer <token>` (a
-`/api/auth/login` returns `{ token, user }`). `GET /api/auth/me` returns the current user.
+Everything is under `/api`. Authenticated endpoints require a JWT in the
+`Authorization` header. `POST /api/auth/login` returns `{ token, user }`;
+`GET /api/auth/me` returns the current user.
 
 | Module | Routes |
 | --- | --- |
-| `auth` | `POST /login`, `POST /logout`, `POST /change-password`, `GET /me` |
+| `auth` | `POST /login`, `POST /logout`, `POST /change-password`, `GET /me`, `PUT /profile` (self-service name/email/phone), `GET /me/security` |
 | `users` | user CRUD, `GET /technicians?type=it\|maintenance`, password reset (sys_admin) |
 | `tickets` | list w/ filters + pagination, detail, create, update (assign/status/priority), comments, work notes, attachments |
 | `suggestions` | list w/ filters + pagination, detail, create, update (workflow + assignment), comments, attachments |
 | `dashboard` | role-scoped stats (totals, IT/maintenance splits, recent tickets, my open requests) |
-| `notifications` | list, `GET /unread-count`, `PUT /:id/read`, `PUT /read-all` |
-| `admin` | category/status/priority/department/role/settings reference management, `GET /activity-logs` (sys_admin) |
+| `notifications` | list, `GET /unread-count`, `PUT /:id/read`, `PUT /read-all`, `GET /preferences`, `PUT /preferences` |
+| `admin` | category/status/priority/department/role/settings reference management; `GET /activity-logs` with action/user/date filters and client IP (sys_admin); `GET /recent-activity` (admin/sys_admin) and `GET /public-settings` (any signed-in user) |
 | `multimedia` | Digital Signage: devices (register + enable/disable + heartbeat), dashboard stats, groups, locations, media upload/stream, broadcast to one/group/all, schedules, playback history, device commands, settings & audit log |
 
 ### Access model (short version)
@@ -184,6 +208,24 @@ Everything is under `/api` and authenticated with `Authorization: Bearer <token>
 - **it_supervisor / maintenance_supervisor** — full control of their team's tickets (assign, priority, status, workflow).
 - **admin** — everything; drives the suggestion review workflow.
 - **sys_admin** — admin + user/role/settings/activity-log management.
+
+## System settings
+
+Settings are **not seeded**. Every configurable value has a code-level default, and a
+`system_settings` row is created the first time a `sys_admin` saves it from
+**Admin → System Settings** (`GET/POST /api/admin/settings`, `PUT /api/admin/settings/:key`).
+This keeps fresh databases working with no extra seed data.
+
+| Section | Keys (defaults) | Effect |
+| --- | --- | --- |
+| Hospital information | `hospital_name`, `hospital_address`, `hospital_phone`, `hospital_email` | Name shown in the header; contact details for printed reports |
+| SLA targets | `sla_critical_hours` (24), `sla_high_days` (3), `sla_medium_days` (7), `sla_low_days` (7) | Deadlines used to flag overdue work on dashboards and reports |
+| Ticket behaviour | `require_resolution_notes` (true), `allow_requester_closure` (true), `notify_new_critical` (false) | Workflow rules enforced by the ticket API |
+| Appearance | `appearance_accent` (blue), `appearance_density` (comfortable), `appearance_show_requester` (true) | Brand accent, layout density, and requester column in request tables |
+
+Non-sensitive keys (`hospital_*`, `appearance_*`, `system_name`) are exposed to every
+signed-in user through `GET /api/admin/public-settings`, which the shell uses to render the
+header and apply the theme. Administrator-level settings stay behind `sys_admin`.
 
 ## Digital Signage module (Multimedia Control)
 
@@ -225,11 +267,14 @@ Schedules, History, Device Commands (supervisors), Settings & Audit (supervisors
 - JWT auth; passwords bcrypt-hashed; deactivated users rejected on login and by their tokens.
 - Login brute-force throttle: 5 failed attempts per email+IP locks for 15 minutes.
 - Role-based access control enforced server-side (list scoping, detail access, action guards).
+- Profile self-service (`PUT /api/auth/profile`) is limited to the caller's own name, email and
+  phone; email changes are checked for uniqueness and every update is written to the audit log.
+- Audit entries capture the client IP (behind a trusted proxy, `X-Forwarded-For` is honoured by
+  Express `trust proxy`) and `/api/auth/me/security` derives the last login/IP and recent failed
+  attempts from those entries — no extra security columns on `users`.
 - File uploads: allow-listed extensions + MIME checks, 10 MB / 5 files max, authorization checked
   *before* files are written, and attachments are served only through authenticated download
   endpoints (no public `/uploads` static mount).
 - Security headers (`nosniff`, `X-Frame-Options`, Referrer-Policy, `no-store`), strict JSON body
   parsing, SQL-injection-safe parameterized queries.
-- Suggestions are private: non-admins only ever see their own.#   N e w - L e a f - C o m p l e x  
- #   N e w - L e a f - C o m p l e x  
- 
+- Suggestions are private: non-admins only ever see their own.
