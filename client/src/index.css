@@ -57,6 +57,7 @@
   --animate-aurora-3: aurora-3 40s ease-in-out infinite;
   --animate-aurora-4: aurora-4 30s ease-in-out infinite;
   --animate-sheen: sheen 18s ease-in-out infinite;
+  --animate-ken-burns: ken-burns 36s ease-in-out infinite alternate;
 }
 
 @keyframes fade-in {
@@ -124,6 +125,12 @@
 @keyframes sheen {
   0%, 100% { opacity: 0.35; transform: translate3d(-3%, -2%, 0) rotate(0deg); }
   50% { opacity: 0.6; transform: translate3d(3%, 2%, 0) rotate(8deg); }
+}
+
+/* Slow push-in on the backdrop photograph. */
+@keyframes ken-burns {
+  0% { transform: scale(1.04) translate3d(0, 0, 0); }
+  100% { transform: scale(1.16) translate3d(-1.5%, -1%, 0); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

@@ -269,9 +269,15 @@ Schedules, History, Device Commands (supervisors), Settings & Audit (supervisors
   (`client/src/pages/auth/Login.jsx`); signed-in users are sent straight to their role home
   (`/dashboard`, `/it`, `/maintenance`, `/admin`). `/login` remains as an alias, and every
   protected route redirects to `/` when there is no session.
-- The sign-in backdrop (`client/src/components/AuthBackdrop.jsx`) is drawn entirely from theme
-  tokens — base wash, four drifting aurora layers, a rotating sheen, a fine grid, film grain and
-  a vignette. No image assets, and it re-themes with the configured accent.
+- The sign-in backdrop (`client/src/components/AuthBackdrop.jsx`) layers a hospital photograph with
+  a slow Ken Burns push-in, a dark wash + centre scrim, four screen-blended aurora layers, a
+  rotating sheen, a drifting grid, film grain and a vignette. The aurora colours come from the
+  theme tokens, so the backdrop re-themes with the configured accent.
+
+  Background photograph: *Hospital de Emergência e Trauma Senador Humberto Lucena* by
+  [Nelson R. de Lima Filho](https://commons.wikimedia.org/wiki/File:Hospital_de_Emerg%C3%AAncia_e_Trauma_Senador_Humberto_Lucena.jpg),
+  licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) and cropped /
+  darkened for this backdrop.
 - Sidebar navigation and its icons are defined once in `client/src/config/navigation.js`
   (`getNavGroups`, `NAV_ICONS`); `node scripts/verify-nav.mjs` checks that every nav item for
   every role resolves to a real icon.
