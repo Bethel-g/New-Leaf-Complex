@@ -2,46 +2,14 @@ import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation, NavLink } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  LayoutDashboard, MonitorCog, Wrench, Lightbulb, User, LogOut,
-  FileText, Inbox, Bell, Users, FolderOpen,
-  ClipboardList, BarChart3, ScrollText, Menu, X, ChevronDown, Building2,
-  UserCheck, Settings, CalendarClock, Search, MonitorPlay, Loader2
+  LayoutDashboard, Bell, User, LogOut, Menu, X, ChevronDown,
+  Search, MonitorPlay, Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import api from '../services/api';
-import { getNavGroups } from '../config/navigation';
+import { getNavGroups, NAV_ICONS } from '../config/navigation';
 import { ticketKind } from './TicketTable';
-
-const NAV_ICONS = {
-  dashboard: LayoutDashboard,
-  it: MonitorCog,
-  maintenance: Wrench,
-  suggestion: Lightbulb,
-  'my-requests': ClipboardList,
-  notifications: Bell,
-  'it-tickets': FileText,
-  'maintenance-tickets': Wrench,
-  assigned: UserCheck,
-  'all-requests': Inbox,
-  suggestions: Lightbulb,
-  reports: BarChart3,
-  users: Users,
-  departments: Building2,
-  categories: FolderOpen,
-  settings: Settings,
-  audit: ScrollText,
-  'multimedia-dashboard': LayoutDashboard,
-  'multimedia-devices': MonitorCog,
-  'multimedia-broadcast': ClipboardList,
-  'multimedia-media': FolderOpen,
-  'multimedia-groups': Users,
-  'multimedia-locations': Building2,
-  'multimedia-schedules': CalendarClock,
-  'multimedia-history': ScrollText,
-  'multimedia-commands': FileText,
-  'multimedia-settings': Settings,
-};
 
 export default function Layout() {
   const { user, logout } = useAuth();

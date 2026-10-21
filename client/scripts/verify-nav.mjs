@@ -2,7 +2,7 @@
  * Verifies that getNavGroups returns the correct per-role sidebar navigation.
  * Run: node scripts/verify-nav.mjs
  */
-import { getNavGroups, getNavLabels, ROLE_HOME } from '../src/config/navigation.js';
+import { getNavGroups, getNavLabels, ROLE_HOME, NAV_ICONS } from '../src/config/navigation.js';
 
 let failures = 0;
 
@@ -102,7 +102,7 @@ console.log('\nSys Admin navigation');
 });
 
 console.log('\nEvery nav item uses a known icon key');
-const knownIcons = new Set(['dashboard', 'it', 'maintenance', 'suggestion', 'my-requests', 'notifications', 'it-tickets', 'maintenance-tickets', 'assigned', 'all-requests', 'suggestions', 'reports', 'users', 'departments', 'categories', 'settings', 'audit']);
+const knownIcons = new Set(Object.keys(NAV_ICONS));
 for (const role of Object.keys(ROLE_HOME)) {
   for (const { items } of getNavGroups(role)) {
     for (const item of items) {

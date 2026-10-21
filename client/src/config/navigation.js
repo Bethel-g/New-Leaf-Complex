@@ -2,6 +2,43 @@
  * Single source of truth for the sidebar navigation, driven by role.
  * The backend remains authoritative for authorization; this only shapes the UI.
  */
+import {
+  LayoutDashboard, MonitorCog, Wrench, Lightbulb, ClipboardList, Bell, FileText,
+  UserCheck, Inbox, BarChart3, Users, FolderOpen, Building2, Settings, ScrollText,
+  CalendarClock,
+} from 'lucide-react';
+
+// Icon for every navigation key. Kept next to the nav definition so the
+// sidebar and the navigation checks can never drift apart.
+export const NAV_ICONS = {
+  dashboard: LayoutDashboard,
+  it: MonitorCog,
+  maintenance: Wrench,
+  suggestion: Lightbulb,
+  'my-requests': ClipboardList,
+  notifications: Bell,
+  'it-tickets': FileText,
+  'maintenance-tickets': Wrench,
+  assigned: UserCheck,
+  'all-requests': Inbox,
+  suggestions: Lightbulb,
+  reports: BarChart3,
+  users: Users,
+  departments: Building2,
+  categories: FolderOpen,
+  settings: Settings,
+  audit: ScrollText,
+  'multimedia-dashboard': LayoutDashboard,
+  'multimedia-devices': MonitorCog,
+  'multimedia-broadcast': ClipboardList,
+  'multimedia-media': FolderOpen,
+  'multimedia-groups': Users,
+  'multimedia-locations': Building2,
+  'multimedia-schedules': CalendarClock,
+  'multimedia-history': ScrollText,
+  'multimedia-commands': FileText,
+  'multimedia-settings': Settings,
+};
 
 export const ROLE_HOME = {
   staff: '/dashboard',

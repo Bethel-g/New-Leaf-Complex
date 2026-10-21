@@ -42,7 +42,7 @@ import MultimediaSettings from './pages/multimedia/MultimediaSettings';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/" replace />;
   return children;
 }
 
@@ -52,31 +52,36 @@ function RoleRoute({ roles, children }) {
   return children;
 }
 
-function AppRoutes() {
+// The landing page doubles as the app home: signed-out visitors get the
+// welcome/sign-in screen, signed-in ones go straight to their workspace.
+function HomeRoute() {
   const { user } = useAuth();
+  if (!user) return <Login />;
+  return <Navigate to={homeRouteFor(user)} replace />;
+}
 
-  const getHomeRoute = () => {
-    if (!user) return '/login';
-    switch (user.role_name) {
-      case 'it_staff':
-      case 'it_supervisor':
-        return '/it';
-      case 'maintenance_staff':
-      case 'maintenance_supervisor':
-        return '/maintenance';
-      case 'admin':
-      case 'sys_admin':
-        return '/admin';
-      default:
-        return '/dashboard';
-    }
-  };
+function homeRouteFor(user) {
+  switch (user.role_name) {
+    case 'it_staff':
+    case 'it_supervisor':
+      return '/it';
+    case 'maintenance_staff':
+    case 'maintenance_supervisor':
+      return '/maintenance';
+    case 'admin':
+    case 'sys_admin':
+      return '/admin';
+    default:
+      return '/dashboard';
+  }
+}
 
+function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route index element={<Navigate to={getHomeRoute()} />} />
+      <Route path="/" element={<HomeRoute />} />
+      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         {/* Staff */}
         <Route path="dashboard" element={<StaffDashboard />} />
         <Route path="submit-it" element={<SubmitITRequest />} />

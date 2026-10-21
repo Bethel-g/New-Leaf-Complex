@@ -51,6 +51,12 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-blob: blob 20s ease-in-out infinite;
   --animate-gradient-pan: gradient-pan 9s ease infinite;
+  --animate-drift: drift 20s linear infinite;
+  --animate-aurora-1: aurora-1 28s ease-in-out infinite;
+  --animate-aurora-2: aurora-2 34s ease-in-out infinite;
+  --animate-aurora-3: aurora-3 40s ease-in-out infinite;
+  --animate-aurora-4: aurora-4 30s ease-in-out infinite;
+  --animate-sheen: sheen 18s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -89,6 +95,35 @@
 @keyframes gradient-pan {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+@keyframes drift {
+  from { background-position: 0 0; }
+  to { background-position: 46px 46px; }
+}
+
+/* Aurora layers — each orb drifts on its own slow path so the backdrop
+   never repeats visibly. */
+@keyframes aurora-1 {
+  0%, 100% { transform: translate3d(-5%, -4%, 0) scale(1); }
+  33% { transform: translate3d(9%, 7%, 0) scale(1.14); }
+  66% { transform: translate3d(-3%, 11%, 0) scale(0.94); }
+}
+@keyframes aurora-2 {
+  0%, 100% { transform: translate3d(6%, 5%, 0) scale(1.05); }
+  40% { transform: translate3d(-8%, -6%, 0) scale(0.92); }
+  70% { transform: translate3d(4%, -9%, 0) scale(1.12); }
+}
+@keyframes aurora-3 {
+  0%, 100% { transform: translate3d(-3%, 8%, 0) scale(0.96); }
+  50% { transform: translate3d(7%, -7%, 0) scale(1.15); }
+}
+@keyframes aurora-4 {
+  0%, 100% { transform: translate3d(4%, -2%, 0) scale(1.08); }
+  45% { transform: translate3d(-6%, 9%, 0) scale(0.9); }
+}
+@keyframes sheen {
+  0%, 100% { opacity: 0.35; transform: translate3d(-3%, -2%, 0) rotate(0deg); }
+  50% { opacity: 0.6; transform: translate3d(3%, 2%, 0) rotate(8deg); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

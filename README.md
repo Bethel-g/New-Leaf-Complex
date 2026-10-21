@@ -19,6 +19,7 @@ and a searchable history with an audit trail.
 - [API overview](#api-overview)
 - [System settings](#system-settings)
 - [Digital Signage module](#digital-signage-module-multimedia-control)
+- [Frontend shell](#frontend-shell)
 - [Security notes](#security-notes)
 
 ## Stack
@@ -261,6 +262,19 @@ treated as offline and are excluded from broadcasts (never reported as playing).
 The module lives under `/multimedia` in the sidebar (Digital Signage section):
 Dashboard, Devices (with per-device detail), Broadcast, Media Library, Groups, Locations,
 Schedules, History, Device Commands (supervisors), Settings & Audit (supervisors).
+
+## Frontend shell
+
+- `/` is the landing page. Signed-out visitors get the animated sign-in screen
+  (`client/src/pages/auth/Login.jsx`); signed-in users are sent straight to their role home
+  (`/dashboard`, `/it`, `/maintenance`, `/admin`). `/login` remains as an alias, and every
+  protected route redirects to `/` when there is no session.
+- The sign-in backdrop (`client/src/components/AuthBackdrop.jsx`) is drawn entirely from theme
+  tokens — base wash, four drifting aurora layers, a rotating sheen, a fine grid, film grain and
+  a vignette. No image assets, and it re-themes with the configured accent.
+- Sidebar navigation and its icons are defined once in `client/src/config/navigation.js`
+  (`getNavGroups`, `NAV_ICONS`); `node scripts/verify-nav.mjs` checks that every nav item for
+  every role resolves to a real icon.
 
 ## Security notes
 
