@@ -164,3 +164,95 @@ Seeded emails are in `ROLES`; every account uses `DEFAULT_PASSWORD` (`password12
 4. If the test uploads a file, ensure the file has `afterAll(cleanupUploads)` at module scope.
 5. Run `npm run test:regression` twice before committing: the suites share one database, and a
    suite that only passes on a second run has an order dependency.
+
+## Manual testing of the Multimedia module (one simulated TV)
+
+The Digital Signage module talks to *players* (TVs / displays) over a small HTTP contract, so a
+physical screen is not needed to exercise it. Two tools ship with the server for this:
+
+| Tool | What it does |
+| --- | --- |
+| `server/scripts/multimedia-e2e.js` | Automated end-to-end run of the whole workflow against a live server (78 assertions). Creates its own device/media/group/schedule and removes them afterwards. |
+| `server/scripts/simulate-device.js` | A long-running TV that heartbeats, logs the `play`/`stop` commands the server sends it, and can download the media file it was told to play. |
+
+### 0. Prerequisites
+
+- API server running on `http://localhost:5001` (`cd server && npm run dev`).
+- Client running on `http://localhost:3000` (`cd client && npm run dev`) for the UI walkthrough.
+
+### 1. Run the automated workflow test
+
+```bash
+cd server
+npm run test:mm          # node scripts/multimedia-e2e.js
+```
+
+It covers, in order: login -> capabilities -> device registration (secret returned once) ->
+heartbeat (accepted, plus wrong-secret / unknown-device / missing-credential rejections) -> media
+upload -> draft cannot be broadcast -> broadcast to the device -> the device is told to `play` with
+a file URL -> media file download -> direct `play`/`stop` commands -> unsupported command (`power`)
+refused and logged -> group targeting -> schedule created and processed on demand -> stop playback
+-> offline handling (stale heartbeat means `offline`, never `playing`) -> history / audit / command
+log -> RBAC (nurse denied, `it_staff` gated by the `multimedia_allow_it_staff_commands` setting) ->
+disable/enable. Exit code `0` means every step passed.
+
+Options: `MM_API`, `MM_EMAIL`, `MM_PASSWORD` override the server, account and password.
+
+### 2. Run a simulated TV and watch it react
+
+Register a device first - the secret is shown **once** (Multimedia -> Devices -> *Register Device*,
+or `POST /api/multimedia/devices`). Then:
+
+```bash
+cd server
+node scripts/simulate-device.js --identifier TV-001 --secret nl-dev-xxxxxxxx
+```
+
+```
+[player] TV-001 -> http://localhost:5001/api/multimedia/devices/heartbeat (every 30s)
+[20:02:02] status=online  idle
+[20:02:32] status=playing  [PLAY]  "Hospital Welcome Message"  media_id=1
+          file_url=/api/multimedia/media/1/file
+```
+
+Options: `--interval <sec>` (default 30), `--server <url>`, `--once`, `--offline-after <sec>`
+(stops heartbeating to simulate a TV being switched off), `--token <jwt>` (a **user** JWT - with it
+the simulator also downloads the media file; the file endpoint sits behind the user auth
+middleware, device credentials are not accepted there).
+
+### 3. UI walkthrough
+
+1. **Multimedia -> Devices -> Register Device**: name `Test TV`, type `tv`, identifier
+   `nl-test-tv-01`. Copy the secret that is shown once.
+2. **Start the simulator** with that identifier + secret. The device row flips to `online` and
+   *Last heartbeat* updates every interval.
+3. **Multimedia -> Media Library -> Upload**: upload a PNG/JPG/MP4 (<= 100 MB). It becomes `active`.
+4. **Multimedia -> Broadcast**: target *This device* -> send. The device turns `playing`, and the
+   simulator prints `[PLAY]` with the file URL.
+5. **Multimedia -> Devices -> Test TV** (device detail) sends a direct play/stop command; the
+   simulator reacts on its next heartbeat.
+6. **Multimedia -> Groups**: add the device to a group, then broadcast to the group.
+7. **Multimedia -> Schedules**: create a schedule (start time in the past) -> open the dashboard or
+   run *Process due schedules*; the TV starts playing on its own.
+8. **Multimedia -> History / Commands / Audit**: the broadcast, stop, heartbeat and command events
+   are all recorded. Unsupported commands appear as `not_supported`.
+9. **Negative checks**: stop the simulator and wait out the heartbeat timeout (default 3 minutes,
+   `Multimedia -> Settings` -> *Heartbeat timeout*) - the device turns `offline`, a broadcast then
+   reports `devices_offline: 1` (never `playing`), and a direct command is refused with
+   *"Device is offline; command not sent"*.
+10. **Disable the device** -> the simulator gets `403 Device is disabled`; re-enable it -> the next
+    heartbeat succeeds.
+
+### Gotchas worth knowing
+
+- **Seeded devices have no secret.** The seed inserts `TV-001`...`TV-006` without a
+  `device_secret_hash`, so they can never authenticate a heartbeat. Register a new device, or give
+  an existing one a secret with `PUT /api/multimedia/devices/:id` + `{"regenerate_secret":true}`
+  (the new secret comes back in the response).
+- **Seeded media rows have no file on disk.** `GET /api/multimedia/media/:id/file` returns 404 for
+  them; upload a real file to test the delivery path.
+- **Schedules are processed on demand**, not by a background worker - the dashboard/history reads
+  and `POST /api/multimedia/schedules/process` trigger them.
+- **Nothing is ever faked.** `play`/`stop` are supported by the bundled `mock-local-player`
+  integration; `power`, `volume` and `mute` are reported `not_supported` instead of pretending to
+  have worked.

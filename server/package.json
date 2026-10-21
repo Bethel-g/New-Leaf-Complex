@@ -14,7 +14,9 @@
     "test:watch": "vitest",
     "test:regression": "vitest run test/regression",
     "test:regression:update": "vitest run test/regression -u",
-    "test:setup": "knex migrate:rollback --all --env test && knex migrate:latest --env test && knex seed:run --env test"
+    "test:setup": "knex migrate:rollback --all --env test && knex migrate:latest --env test && knex seed:run --env test",
+    "test:mm": "node scripts/multimedia-e2e.js",
+    "sim:device": "node scripts/simulate-device.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

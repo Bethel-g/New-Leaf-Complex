@@ -263,6 +263,20 @@ The module lives under `/multimedia` in the sidebar (Digital Signage section):
 Dashboard, Devices (with per-device detail), Broadcast, Media Library, Groups, Locations,
 Schedules, History, Device Commands (supervisors), Settings & Audit (supervisors).
 
+### Testing the module without hardware
+
+Two scripts in `server/scripts/` drive the whole workflow against a running API:
+
+```bash
+cd server
+npm run test:mm          # end-to-end workflow test (78 assertions, cleans up after itself)
+npm run sim:device -- --identifier TV-001 --secret nl-dev-xxx   # a TV that heartbeats and logs commands
+```
+
+See [TESTING.md](TESTING.md#manual-testing-of-the-multimedia-module-one-simulated-tv) for the
+full manual walkthrough and the known gotchas (seeded devices have no secret, seeded media rows
+have no file on disk, schedules run on demand).
+
 ## Frontend shell
 
 - `/` is the landing page. Signed-out visitors get the animated sign-in screen
