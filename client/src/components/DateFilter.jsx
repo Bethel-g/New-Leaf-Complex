@@ -1,15 +1,18 @@
+import { useTranslation } from '../i18n';
+
 const PRESETS = [
-  { key: 'today', label: 'Today' },
-  { key: 'week', label: 'This week' },
-  { key: 'month', label: 'This month' },
-  { key: 'custom', label: 'Custom range' },
+  { key: 'today', labelKey: 'common.dateFilter.today' },
+  { key: 'week', labelKey: 'common.dateFilter.week' },
+  { key: 'month', labelKey: 'common.dateFilter.month' },
+  { key: 'custom', labelKey: 'common.dateFilter.custom' },
 ];
 
 export default function DateFilter({ period, from, to, onChange }) {
+  const { t } = useTranslation();
   const setPeriod = (key) => onChange({ period: key, from: '', to: '' });
 
   return (
-    <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Date range filter">
+    <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('common.dateFilter.label')}>
       {PRESETS.map((p) => (
         <button
           key={p.key}
@@ -19,10 +22,10 @@ export default function DateFilter({ period, from, to, onChange }) {
           className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
             period === p.key
               ? 'bg-primary-600 text-white border-primary-600'
-              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+              : 'bg-surface text-gray-600 border-gray-300 hover:bg-gray-50'
           }`}
         >
-          {p.label}
+          {t(p.labelKey)}
         </button>
       ))}
       {period === 'custom' && (
@@ -31,16 +34,16 @@ export default function DateFilter({ period, from, to, onChange }) {
             type="date"
             value={from}
             onChange={(e) => onChange({ period: 'custom', from: e.target.value, to })}
-            aria-label="From date"
-            className="border border-gray-300 rounded-lg px-2 py-1.5 bg-white text-gray-700"
+            aria-label={t('common.dateFilter.from')}
+            className="border border-gray-300 rounded-lg px-2 py-1.5 bg-surface text-gray-700"
           />
-          <span>to</span>
+          <span>{t('common.dateFilter.toLabel')}</span>
           <input
             type="date"
             value={to}
             onChange={(e) => onChange({ period: 'custom', from, to: e.target.value })}
-            aria-label="To date"
-            className="border border-gray-300 rounded-lg px-2 py-1.5 bg-white text-gray-700"
+            aria-label={t('common.dateFilter.to')}
+            className="border border-gray-300 rounded-lg px-2 py-1.5 bg-surface text-gray-700"
           />
         </div>
       )}

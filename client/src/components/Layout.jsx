@@ -10,10 +10,14 @@ import { useSettings } from '../context/SettingsContext';
 import api from '../services/api';
 import { getNavGroups, NAV_ICONS } from '../config/navigation';
 import { ticketKind } from './TicketTable';
+import { useTranslation } from '../i18n';
+import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const { publicSettings } = useSettings();
+  const { t, roleLabel } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -23,7 +27,7 @@ export default function Layout() {
   const [searching, setSearching] = useState(false);
   const [signageOffline, setSignageOffline] = useState(null);
 
-  const hospitalName = publicSettings.hospital_name || 'New Leaf Complex';
+  const hospitalName = publicSettings.hospital_name || t('shell.brand.name');
   const showSignage = ['it_staff', 'it_supervisor', 'admin', 'sys_admin'].includes(user?.role_name);
 
   useEffect(() => {
@@ -70,9 +74,9 @@ export default function Layout() {
         navigate(`/suggestions/${suggestion.id}`);
         return;
       }
-      toast.error(`No requests or suggestions match “${q}”`);
+      toast.error(t('shell.search.empty', { query: q }));
     } catch {
-      toast.error('Search failed. Please try again.');
+      toast.error(t('shell.search.failed'));
     } finally {
       setSearching(false);
     }
@@ -90,15 +94,15 @@ export default function Layout() {
           NL
         </div>
         <div>
-          <div className="text-white font-bold text-sm leading-tight">New Leaf Complex</div>
-          <div className="text-primary-200/70 text-xs">Operations System</div>
+          <div className="text-white font-bold text-sm leading-tight">{t('shell.brand.name')}</div>
+          <div className="text-primary-200/70 text-xs">{t('shell.brand.subtitle')}</div>
         </div>
       </div>
       <nav aria-label={landmarkLabel} className="flex-1 px-3 py-5 space-y-6 overflow-y-auto">
         {navGroups.map((group) => (
-          <div key={group.title}>
+          <div key={group.titleKey}>
             <div className="px-3 text-[11px] font-semibold uppercase tracking-wider text-primary-200/50 mb-2">
-              {group.title}
+              {t(group.titleKey)}
             </div>
             <div className="space-y-1">
               {group.items.map((item) => {
@@ -117,7 +121,7 @@ export default function Layout() {
                     }
                   >
                     <ItemIcon className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </NavLink>
                 );
               })}
@@ -134,20 +138,20 @@ export default function Layout() {
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-primary-100/70 hover:bg-white/10 hover:text-white transition-colors w-full"
         >
           <LogOut className="w-5 h-5" />
-          Logout
+          {t('shell.nav.logout')}
         </button>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-primary-50/60">
+    <div className="app-shell min-h-screen bg-gradient-to-br from-surface-muted via-surface-muted to-primary-soft/60">
       {/* Desktop sidebar */}
       <aside
-        aria-label="Sidebar"
+        aria-label={t('shell.nav.sidebar')}
         className="hidden lg:block print:hidden fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-primary-900 via-primary-950 to-slate-950 z-30 border-r border-white/5"
       >
-        {renderNav('Main navigation')}
+        {renderNav(t('shell.nav.main'))}
       </aside>
 
       {/* Mobile sidebar */}
@@ -158,13 +162,13 @@ export default function Layout() {
             onClick={() => setSidebarOpen(false)}
           />
           <aside
-            aria-label="Sidebar"
+            aria-label={t('shell.nav.sidebar')}
             className="absolute inset-y-0 left-0 w-64 bg-gradient-to-b from-primary-900 via-primary-950 to-slate-950 animate-fade-in-left"
           >
-            <button aria-label="Close navigation menu" className="absolute top-4 right-4 text-primary-200/70 hover:text-white" onClick={() => setSidebarOpen(false)}>
+            <button aria-label={t('shell.nav.close')} className="absolute top-4 right-4 text-primary-200/70 hover:text-white" onClick={() => setSidebarOpen(false)}>
               <X className="w-5 h-5" />
             </button>
-            {renderNav('Mobile navigation')}
+            {renderNav(t('shell.nav.mobile'))}
           </aside>
         </div>
       )}
@@ -172,15 +176,15 @@ export default function Layout() {
       {/* Main content */}
       <div className="lg:pl-64 print:pl-0">
         {/* Top bar */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/70 sticky top-0 z-20 shadow-sm shadow-slate-900/5 print:hidden">
+        <header className="bg-surface/80 backdrop-blur-md border-b border-gray-200/70 sticky top-0 z-20 shadow-sm shadow-slate-900/5 print:hidden">
           <div className="flex items-center justify-between px-4 sm:px-6 py-3">
             <div className="flex items-center gap-3">
-              <button aria-label="Open navigation menu" aria-expanded={sidebarOpen} className="lg:hidden text-gray-600 p-1.5 rounded-lg hover:bg-gray-100" onClick={() => setSidebarOpen(true)}>
+              <button aria-label={t('shell.nav.open')} aria-expanded={sidebarOpen} className="lg:hidden text-gray-600 p-1.5 rounded-lg hover:bg-gray-100" onClick={() => setSidebarOpen(true)}>
                 <Menu className="w-6 h-6" />
               </button>
               <div className="hidden sm:block text-sm text-gray-500">
                 <h1 className="text-lg font-semibold text-gray-800 leading-tight">{hospitalName}</h1>
-                <p className="text-xs text-gray-400">Operations System</p>
+                <p className="text-xs text-gray-400">{t('shell.brand.subtitle')}</p>
               </div>
               <h1 className="sm:hidden text-lg font-semibold text-gray-800">{hospitalName}</h1>
             </div>
@@ -192,33 +196,35 @@ export default function Layout() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search requests, suggestions, ticket #..."
-                aria-label="Global search"
-                className="w-full pl-10 pr-9 py-2 rounded-full border border-transparent bg-gray-100/80 text-sm transition-all focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-500/25 outline-none"
+                placeholder={t('shell.search.placeholder')}
+                aria-label={t('shell.search.label')}
+                className="w-full pl-10 pr-9 py-2 rounded-full border border-transparent bg-gray-100/80 text-sm transition-all focus:bg-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-500/25 outline-none"
               />
-              {searching && <Loader2 className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-primary-500 animate-spin" />}
+              {searching && <Loader2 className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-brand-text animate-spin" />}
             </form>
 
             <div className="flex items-center gap-1 sm:gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
               {showSignage && (
                 <Link
                   to="/multimedia"
-                  aria-label={`Digital signage${signageOffline ? ` (${signageOffline} offline)` : ''}`}
-                  title={signageOffline ? `${signageOffline} signage device(s) offline` : 'Digital signage is healthy'}
-                  className="relative p-2 text-gray-500 hover:text-primary-600 rounded-full hover:bg-primary-50 transition-colors"
+                  aria-label={`${t('shell.signage.label')}${signageOffline ? ` (${signageOffline} offline)` : ''}`}
+                  title={signageOffline ? t('shell.signage.offline', { count: signageOffline }) : t('shell.signage.healthy')}
+                  className="relative p-2 text-gray-500 hover:text-brand-text rounded-full hover:bg-primary-soft transition-colors"
                 >
                   <MonitorPlay className="w-5 h-5" />
                   {signageOffline > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center ring-2 ring-white">
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center ring-2 ring-surface">
                       {signageOffline > 99 ? '99+' : signageOffline}
                     </span>
                   )}
                 </Link>
               )}
-              <Link to="/notifications" aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`} className="relative p-2 text-gray-500 hover:text-primary-600 rounded-full hover:bg-primary-50 transition-colors">
+              <Link to="/notifications" aria-label={`${t('shell.notifications.label')}${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`} className="relative p-2 text-gray-500 hover:text-brand-text rounded-full hover:bg-primary-soft transition-colors">
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center ring-2 ring-white">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center ring-2 ring-surface">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}
@@ -226,7 +232,7 @@ export default function Layout() {
               <div className="relative">
                 <button
                   onClick={() => setNavOpen(!navOpen)}
-                  aria-label="User menu"
+                  aria-label={t('shell.nav.userMenu')}
                   aria-haspopup="menu"
                   aria-expanded={navOpen}
                   className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
@@ -236,18 +242,18 @@ export default function Layout() {
                   </div>
                   <div className="hidden sm:block text-left">
                     <div className="text-sm font-medium text-gray-800 leading-tight">{user?.name}</div>
-                    <div className="text-xs text-gray-500 capitalize">{user?.role_name?.replace(/_/g, ' ')}</div>
+                    <div className="text-xs text-gray-500 capitalize">{roleLabel(user?.role_name)}</div>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-gray-500 hidden sm:block transition-transform ${navOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {navOpen && (
                   <div
                     role="menu"
-                    aria-label="User menu"
-                    className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl shadow-slate-900/10 py-1.5 z-50 origin-top-right animate-scale-in"
+                    aria-label={t('shell.nav.userMenu')}
+                    className="absolute right-0 mt-2 w-48 bg-surface border border-gray-100 rounded-xl shadow-xl shadow-slate-900/10 py-1.5 z-50 origin-top-right animate-scale-in"
                   >
                     <Link to="/profile" role="menuitem" onClick={() => setNavOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                      <User className="w-4 h-4" /> Profile
+                      <User className="w-4 h-4" /> {t('shell.nav.profile')}
                     </Link>
                     <button
                       role="menuitem"
@@ -256,9 +262,9 @@ export default function Layout() {
                         await logout();
                         navigate('/login');
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-soft-text hover:bg-red-soft"
                     >
-                      <LogOut className="w-4 h-4" /> Logout
+                      <LogOut className="w-4 h-4" /> {t('shell.nav.logout')}
                     </button>
                   </div>
                 )}

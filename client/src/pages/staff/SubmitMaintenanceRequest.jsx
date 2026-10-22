@@ -5,8 +5,10 @@ import { Wrench, Upload, X, CheckCircle2, CalendarClock, Hash, ArrowRight, Boxes
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../components/TicketTable';
+import { useTranslation } from '../../i18n';
 
 export default function SubmitMaintenanceRequest() {
+  const { t, priorityLabel } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -34,7 +36,7 @@ export default function SubmitMaintenanceRequest() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.category_id || !form.title.trim()) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('staff.form.requiredFields'));
       return;
     }
     setSubmitting(true);
@@ -45,9 +47,9 @@ export default function SubmitMaintenanceRequest() {
       files.forEach((f) => fd.append('attachments', f));
       const res = await api.post('/tickets', fd);
       setSubmitted({ ticket_number: res.data.ticket_number, created_at: new Date().toISOString() });
-      toast.success(`Maintenance Request ${res.data.ticket_number} submitted successfully`);
+      toast.success(t('staff.maintenance.form.success', { number: res.data.ticket_number }));
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit request');
+      toast.error(err.response?.data?.message || t('staff.form.failed'));
     } finally {
       setSubmitting(false);
     }
@@ -56,28 +58,28 @@ export default function SubmitMaintenanceRequest() {
   if (submitted) {
     return (
       <div className="max-w-xl mx-auto">
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-success-100 text-success-600 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-surface rounded-xl border border-gray-200 p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-success-soft-strong text-success-soft-text flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Request Submitted</h2>
-          <p className="text-gray-500 mt-1">Your maintenance request has been sent to the maintenance team.</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('staff.maintenance.submitted.title')}</h2>
+          <p className="text-gray-500 mt-1">{t('staff.maintenance.submitted.message')}</p>
 
           <div className="mt-6 bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-3 text-left">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 flex items-center gap-2"><Hash className="w-3.5 h-3.5" /> Ticket Number</span>
-              <span className="font-semibold text-orange-700">{submitted.ticket_number}</span>
+              <span className="text-gray-500 flex items-center gap-2"><Hash className="w-3.5 h-3.5" /> {t('staff.form.ticketNumber')}</span>
+              <span className="font-semibold text-orange-soft-text">{submitted.ticket_number}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 flex items-center gap-2"><CalendarClock className="w-3.5 h-3.5" /> Created</span>
+              <span className="text-gray-500 flex items-center gap-2"><CalendarClock className="w-3.5 h-3.5" /> {t('common.labels.created')}</span>
               <span className="font-medium text-gray-700">{formatDate(submitted.created_at)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Requested By</span>
+              <span className="text-gray-500">{t('staff.form.requestedBy')}</span>
               <span className="font-medium text-gray-700">{user?.name}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Department</span>
+              <span className="text-gray-500">{t('common.labels.department')}</span>
               <span className="font-medium text-gray-700">{user?.department_name}</span>
             </div>
           </div>
@@ -87,13 +89,13 @@ export default function SubmitMaintenanceRequest() {
               to="/my-requests"
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-700"
             >
-              View My Requests <ArrowRight className="w-4 h-4" />
+              {t('staff.form.viewMyRequests')} <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={() => { setSubmitted(null); setForm({ category_id: '', title: '', description: '', location: '', equipment_name: '', priority: 'Medium', contact_info: '' }); setFiles([]); }}
               className="px-5 py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50"
             >
-              Submit Another Request
+              {t('staff.form.submitAnother')}
             </button>
           </div>
         </div>
@@ -104,60 +106,60 @@ export default function SubmitMaintenanceRequest() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-11 h-11 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+        <div className="w-11 h-11 rounded-lg bg-orange-soft-strong text-orange-soft-text flex items-center justify-center">
           <Wrench className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-800">New Maintenance Request</h2>
-          <p className="text-sm text-gray-500">Report a facility or equipment problem</p>
+          <h2 className="text-xl font-bold text-gray-800">{t('nav.newMaintenanceRequest')}</h2>
+          <p className="text-sm text-gray-500">{t('staff.maintenance.form.subtitle')}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-surface rounded-xl border border-gray-200 p-6 space-y-5">
         {/* Auto-populated fields */}
         <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="requester" className="block text-sm font-medium text-gray-600 mb-1">Requester</label>
+            <label htmlFor="requester" className="block text-sm font-medium text-gray-600 mb-1">{t('common.labels.requester')}</label>
             <input
               id="requester"
               type="text"
               value={user?.name || ''}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="department" className="block text-sm font-medium text-gray-600 mb-1">Department</label>
+            <label htmlFor="department" className="block text-sm font-medium text-gray-600 mb-1">{t('common.labels.department')}</label>
             <input
               id="department"
               type="text"
               value={user?.department_name || ''}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="ticket-number" className="block text-sm font-medium text-gray-600 mb-1">Ticket Number</label>
+            <label htmlFor="ticket-number" className="block text-sm font-medium text-gray-600 mb-1">{t('staff.form.ticketNumber')}</label>
             <input
               id="ticket-number"
               type="text"
-              value="Assigned automatically on submission"
+              value={t('staff.form.autoAssigned')}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="created-date" className="block text-sm font-medium text-gray-600 mb-1">Created Date</label>
+            <label htmlFor="created-date" className="block text-sm font-medium text-gray-600 mb-1">{t('staff.form.createdDate')}</label>
             <input
               id="created-date"
               type="text"
               value={formatDate(new Date().toISOString())}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
             />
           </div>
         </div>
@@ -165,7 +167,7 @@ export default function SubmitMaintenanceRequest() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-              Problem Category <span className="text-red-500">*</span>
+              {t('staff.maintenance.form.problemCategory')} <span className="text-red-soft-text">*</span>
             </label>
             <select
               id="category"
@@ -174,14 +176,14 @@ export default function SubmitMaintenanceRequest() {
               onChange={(e) => setForm({ ...form, category_id: e.target.value })}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
             >
-              <option value="">Select category</option>
+              <option value="">{t('staff.form.selectCategory')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">{t('common.labels.priority')}</label>
             <select
               id="priority"
               value={form.priority}
@@ -189,7 +191,7 @@ export default function SubmitMaintenanceRequest() {
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
             >
               {['Low', 'Medium', 'High', 'Critical'].map((p) => (
-                <option key={p} value={p}>{p}</option>
+                <option key={p} value={p}>{priorityLabel(p)}</option>
               ))}
             </select>
           </div>
@@ -197,7 +199,7 @@ export default function SubmitMaintenanceRequest() {
 
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Problem Title <span className="text-red-500">*</span>
+            {t('staff.form.problemTitle')} <span className="text-red-soft-text">*</span>
           </label>
           <input
             id="title"
@@ -206,37 +208,37 @@ export default function SubmitMaintenanceRequest() {
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. Sink is leaking continuously"
+            placeholder={t('staff.maintenance.form.titlePlaceholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Problem Description</label>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t('staff.form.problemDescription')}</label>
           <textarea
             id="description"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             rows={4}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="Describe the problem in detail..."
+            placeholder={t('staff.form.describeProblem')}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">{t('common.labels.location')}</label>
             <input
               id="location"
               type="text"
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-              placeholder="e.g. Ward 1, Room 104"
+              placeholder={t('staff.maintenance.form.locationPlaceholder')}
             />
           </div>
           <div>
             <label htmlFor="equipment" className="block text-sm font-medium text-gray-700 mb-1">
-              <span className="inline-flex items-center gap-1"><Boxes className="w-3.5 h-3.5" /> Equipment Name</span>
+              <span className="inline-flex items-center gap-1"><Boxes className="w-3.5 h-3.5" /> {t('staff.maintenance.form.equipmentName')}</span>
             </label>
             <input
               id="equipment"
@@ -244,27 +246,27 @@ export default function SubmitMaintenanceRequest() {
               value={form.equipment_name}
               onChange={(e) => setForm({ ...form, equipment_name: e.target.value })}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-              placeholder="e.g. Refrigerator, X-Ray machine"
+              placeholder={t('staff.maintenance.form.equipmentPlaceholder')}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">Contact Information (optional)</label>
+            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">{t('staff.form.contactInfo')}</label>
             <input
               id="contact"
               type="text"
               value={form.contact_info}
               onChange={(e) => setForm({ ...form, contact_info: e.target.value })}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-              placeholder="e.g. Extension 5421"
+              placeholder={t('staff.form.contactPlaceholder')}
             />
           </div>
           <div className="flex items-end py-1">
             <label className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-600 hover:border-orange-400 cursor-pointer">
               <Upload className="w-4 h-4" />
-              Upload photos
+              {t('staff.maintenance.form.uploadPhotos')}
               <input type="file" multiple accept="image/*" onChange={handleFileChange} className="hidden" />
             </label>
           </div>
@@ -274,16 +276,16 @@ export default function SubmitMaintenanceRequest() {
           {files.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               {files.map((f, i) => (
-                <div key={i} className="flex items-center gap-1 text-xs bg-orange-50 px-2 py-1 rounded">
+                <div key={i} className="flex items-center gap-1 text-xs bg-orange-soft px-2 py-1 rounded">
                   {f.name}
-                  <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label={`Remove ${f.name}`}>
+                  <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label={t('staff.form.removeFile', { name: f.name })}>
                     <X className="w-3 h-3" />
                   </button>
                 </div>
               ))}
             </div>
           )}
-          <p className="text-xs text-gray-400 mt-1.5">Up to 5 photos, max 10 MB each.</p>
+          <p className="text-xs text-gray-400 mt-1.5">{t('staff.maintenance.form.photoHint')}</p>
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
@@ -292,14 +294,14 @@ export default function SubmitMaintenanceRequest() {
             onClick={() => navigate(-1)}
             className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg"
           >
-            Cancel
+            {t('common.actions.cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="px-6 py-2.5 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-700 disabled:opacity-50"
           >
-            {submitting ? 'Submitting...' : 'Submit Request'}
+            {submitting ? t('staff.form.submitting') : t('staff.form.submitRequest')}
           </button>
         </div>
       </form>

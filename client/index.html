@@ -1,9 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light" data-lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Leaf Complex Operations System</title>
+    <script>
+      /* Apply the stored appearance before the first paint so the page never
+         flashes the wrong theme or language. */
+      (function () {
+        try {
+          var root = document.documentElement;
+          var theme = localStorage.getItem('nl.theme');
+          var lang = localStorage.getItem('nl.lang');
+          if (theme === 'light' || theme === 'dark') {
+            root.setAttribute('data-theme', theme);
+            root.style.colorScheme = theme;
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            root.setAttribute('data-theme', 'dark');
+            root.style.colorScheme = 'dark';
+          }
+          if (lang === 'en' || lang === 'am') {
+            root.setAttribute('lang', lang);
+            root.setAttribute('data-lang', lang);
+          }
+        } catch (error) {
+          /* private mode — fall back to the defaults */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

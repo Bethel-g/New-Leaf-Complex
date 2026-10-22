@@ -4,26 +4,29 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { ROLE_HOME } from '../../config/navigation';
 import AuthBackdrop from '../../components/AuthBackdrop';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { useTranslation } from '../../i18n';
 import {
   Leaf, Mail, Lock, Eye, EyeOff, Loader2, ArrowRight,
   ChevronDown, Sparkles, ShieldCheck, AlertCircle,
 } from 'lucide-react';
 
 const DEMO_ACCOUNTS = [
-  { label: 'Sys Admin', email: 'admin@newleaf.com' },
-  { label: 'Admin', email: 'hospital.admin@newleaf.com' },
-  { label: 'IT Supervisor', email: 'john.it@newleaf.com' },
-  { label: 'IT Tech', email: 'mike.tech@newleaf.com' },
-  { label: 'Maint. Sup.', email: 'ahmed.maint@newleaf.com' },
-  { label: 'Maint. Tech', email: 'ali.maint@newleaf.com' },
-  { label: 'Nurse', email: 'fatima.nurse@newleaf.com' },
-  { label: 'Doctor', email: 'omar.doctor@newleaf.com' },
+  { labelKey: 'auth.demo.sysAdmin', email: 'admin@newleaf.com' },
+  { labelKey: 'auth.demo.admin', email: 'hospital.admin@newleaf.com' },
+  { labelKey: 'auth.demo.itSupervisor', email: 'john.it@newleaf.com' },
+  { labelKey: 'auth.demo.itTech', email: 'mike.tech@newleaf.com' },
+  { labelKey: 'auth.demo.maintenanceSupervisor', email: 'ahmed.maint@newleaf.com' },
+  { labelKey: 'auth.demo.maintenanceTech', email: 'ali.maint@newleaf.com' },
+  { labelKey: 'auth.demo.nurse', email: 'fatima.nurse@newleaf.com' },
+  { labelKey: 'auth.demo.doctor', email: 'omar.doctor@newleaf.com' },
 ];
 
 const DEMO_PASSWORD = 'password123';
 
 export default function Login() {
   const { user, login } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,10 +48,10 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await login(email, password);
-      toast.success('Welcome back');
+      toast.success(t('auth.signIn.welcome'));
       navigate(ROLE_HOME[data.user.role_name] || '/dashboard', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || t('auth.signIn.failed'));
     } finally {
       setLoading(false);
     }
@@ -65,6 +68,10 @@ export default function Login() {
     <div className="relative min-h-screen overflow-hidden bg-slate-950 flex items-center justify-center px-4 py-12">
       <AuthBackdrop />
 
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageSwitcher variant="dark" />
+      </div>
+
       <main className="relative w-full max-w-md">
         {/* ── Brand ─────────────────────────────────────────────────────── */}
         <div className="flex flex-col items-center text-center animate-fade-in-up">
@@ -75,11 +82,11 @@ export default function Login() {
             </div>
           </div>
           <h1 className="mt-5 text-2xl font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(2,6,23,.75)]">
-            New Leaf Complex
+            {t('auth.brand.title')}
           </h1>
-          <p className="text-sm text-slate-200/85 drop-shadow-[0_1px_6px_rgba(2,6,23,.7)]">Operations System</p>
+          <p className="text-sm text-slate-200/85 drop-shadow-[0_1px_6px_rgba(2,6,23,.7)]">{t('auth.brand.subtitle')}</p>
           <p className="mt-3 max-w-[22rem] text-center text-[13px] leading-relaxed text-slate-100/80 drop-shadow-[0_1px_8px_rgba(2,6,23,.8)]">
-            One place for hospital requests, maintenance and improvement ideas.
+            {t('auth.brand.tagline')}
           </p>
         </div>
 
@@ -88,8 +95,8 @@ export default function Login() {
           className="mt-8 rounded-2xl bg-slate-900/70 p-7 sm:p-8 shadow-2xl shadow-slate-950/70 ring-1 ring-white/15 backdrop-blur-xl animate-fade-in-up"
           style={{ animationDelay: '120ms' }}
         >
-          <h2 className="text-lg font-semibold text-white">Sign in</h2>
-          <p className="mt-1 text-sm text-slate-300/80">Use your hospital account.</p>
+          <h2 className="text-lg font-semibold text-white">{t('auth.signIn.title')}</h2>
+          <p className="mt-1 text-sm text-slate-300/80">{t('auth.signIn.subtitle')}</p>
 
           {error && (
             <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-sm text-red-200 animate-fade-in-down">
@@ -100,7 +107,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="mt-5 space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-200">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-200">{t('auth.signIn.email')}</label>
               <div className="relative mt-1.5">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                 <input
@@ -111,14 +118,14 @@ export default function Login() {
                   autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@newleaf.com"
+                  placeholder={t('auth.signIn.emailPlaceholder')}
                   className="w-full rounded-xl border border-white/15 bg-white/10 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-400 transition focus:border-primary-400 focus:ring-4 focus:ring-primary-400/25 outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-200">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-200">{t('auth.signIn.password')}</label>
               <div className="relative mt-1.5">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                 <input
@@ -135,7 +142,7 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('auth.signIn.hidePassword') : t('auth.signIn.showPassword')}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -151,11 +158,11 @@ export default function Login() {
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Signing in
+                  <Loader2 className="w-4 h-4 animate-spin" /> {t('auth.signIn.submitting')}
                 </>
               ) : (
                 <>
-                  Sign in
+                  {t('auth.signIn.submit')}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
@@ -171,7 +178,7 @@ export default function Login() {
               className="flex w-full items-center justify-between text-sm font-medium text-slate-300 transition-colors hover:text-white"
             >
               <span className="inline-flex items-center gap-2">
-                <Sparkles className="w-4 h-4" /> Demo accounts
+                <Sparkles className="w-4 h-4" /> {t('auth.demo.toggle')}
               </span>
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showDemo ? 'rotate-180' : ''}`} />
             </button>
@@ -189,14 +196,14 @@ export default function Login() {
                         : 'border border-white/15 bg-white/5 text-slate-200 hover:-translate-y-0.5 hover:bg-white/15 hover:text-white'
                     }`}
                   >
-                    {acc.label}
+                    {t(acc.labelKey)}
                   </button>
                 ))}
               </div>
             )}
 
             <p className="mt-2 text-xs text-slate-400">
-              Shared password: <span className="font-medium text-slate-200">{DEMO_PASSWORD}</span>
+              {t('auth.demo.sharedPassword')} <span className="font-medium text-slate-200">{DEMO_PASSWORD}</span>
             </p>
           </div>
         </div>
@@ -205,7 +212,7 @@ export default function Login() {
           className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-100/70 drop-shadow-[0_1px_6px_rgba(2,6,23,.8)] animate-fade-in"
           style={{ animationDelay: '320ms' }}
         >
-          <ShieldCheck className="w-3.5 h-3.5" /> Secure hospital access
+          <ShieldCheck className="w-3.5 h-3.5" /> {t('auth.signIn.secure')}
         </p>
       </main>
     </div>

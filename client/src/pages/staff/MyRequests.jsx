@@ -7,20 +7,22 @@ import api from '../../services/api';
 import { Badge, statusColor, priorityColor } from '../../components/Badge';
 import { formatDate, ticketKind } from '../../components/TicketTable';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
+import { useTranslation } from '../../i18n';
 
 // Where a request sits in its life, so staff can see at a glance what is still
 // moving and what is waiting on them.
 const STAGE_FILTERS = [
-  { key: 'all', label: 'All stages' },
-  { key: 'active', label: 'In progress' },
-  { key: 'waiting', label: 'Waiting on me' },
-  { key: 'done', label: 'Finished' },
+  { key: 'all', labelKey: 'staff.requests.stage.all' },
+  { key: 'active', labelKey: 'staff.requests.stage.active' },
+  { key: 'waiting', labelKey: 'staff.requests.stage.waiting' },
+  { key: 'done', labelKey: 'staff.requests.stage.done' },
 ];
 
 const WAITING_STATUSES = ['Waiting for Information', 'Waiting for Parts', 'Needs More Information'];
 const DONE_STATUSES = ['Resolved', 'Completed', 'Closed'];
 
 export default function MyRequests({ initialTab = 'all' }) {
+  const { t, statusLabel, priorityLabel } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ export default function MyRequests({ initialTab = 'all' }) {
       id: s.id,
       number: s.suggestion_number,
       title: s.title,
-      category: 'Suggestion',
+      category: t('common.ticket.type.suggestion'),
       location: null,
       priority: null,
       status: s.status_name,
@@ -86,14 +88,19 @@ export default function MyRequests({ initialTab = 'all' }) {
   const stageCount = (key) => byKind.filter((i) => inStage(i, key)).length;
   const needsConfirm = (item) => item.type === 'ticket' && ['Resolved', 'Completed'].includes(item.status);
   const needsInfo = (item) => item.type === 'suggestion' && item.status === 'Needs More Information';
-  const pageTitle = { all: 'My Requests', it: 'My IT Requests', maintenance: 'My Maintenance Requests', suggestion: 'My Suggestions' }[tab];
+  const pageTitle = {
+    all: t('staff.requests.title.all'),
+    it: t('staff.requests.title.it'),
+    maintenance: t('staff.requests.title.maintenance'),
+    suggestion: t('staff.requests.title.suggestion'),
+  }[tab];
   const pageSubtitle = tab === 'it'
-    ? 'Your submitted IT support requests'
+    ? t('staff.requests.subtitle.it')
     : tab === 'maintenance'
-      ? 'Your submitted maintenance requests'
+      ? t('staff.requests.subtitle.maintenance')
       : tab === 'suggestion'
-        ? 'Your submitted suggestions'
-        : 'Track all your submitted requests';
+        ? t('staff.requests.subtitle.suggestion')
+        : t('staff.requests.subtitle.all');
 
   return (
     <div className="space-y-6">
@@ -103,37 +110,43 @@ export default function MyRequests({ initialTab = 'all' }) {
           <p className="text-gray-500 text-sm">{pageSubtitle}</p>
         </div>
         <div className="flex gap-2">
-          <Link to="/submit-it" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
-            <MonitorCog className="w-4 h-4" /> IT
+          <Link to="/submit-it" className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
+            <MonitorCog className="w-4 h-4" /> {t('common.ticket.type.it')}
           </Link>
           <Link to="/submit-maintenance" className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700">
-            <Wrench className="w-4 h-4" /> Maintenance
+            <Wrench className="w-4 h-4" /> {t('common.ticket.type.maintenance')}
           </Link>
           <Link to="/submit-suggestion" className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
-            <Lightbulb className="w-4 h-4" /> Suggestion
+            <Lightbulb className="w-4 h-4" /> {t('common.ticket.type.suggestion')}
           </Link>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex gap-2 border-b border-gray-200 flex-1 min-w-[280px]" role="tablist" aria-label="Request types">
-          {['all', 'it', 'maintenance', 'suggestion'].map((t) => (
+        <div className="flex gap-2 border-b border-gray-200 flex-1 min-w-[280px]" role="tablist" aria-label={t('staff.requests.aria.types')}>
+          {['all', 'it', 'maintenance', 'suggestion'].map((kind) => (
             <button
-              key={t}
+              key={kind}
               role="tab"
-              aria-selected={tab === t}
-              onClick={() => setTab(t)}
+              aria-selected={tab === kind}
+              onClick={() => setTab(kind)}
               className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                tab === t
-                  ? 'border-primary-600 text-primary-600'
+                tab === kind
+                  ? 'border-primary-600 text-brand-text'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              {t === 'all' ? 'All' : t === 'it' ? 'IT Requests' : t === 'maintenance' ? 'Maintenance' : 'Suggestions'}
+              {kind === 'all'
+                ? t('common.actions.all')
+                : kind === 'it'
+                  ? t('staff.requests.tab.it')
+                  : kind === 'maintenance'
+                    ? t('common.ticket.type.maintenance')
+                    : t('staff.requests.tab.suggestions')}
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by stage">
+        <div className="flex flex-wrap gap-2" role="group" aria-label={t('staff.requests.aria.stages')}>
           {STAGE_FILTERS.map((s) => (
             <button
               key={s.key}
@@ -145,7 +158,7 @@ export default function MyRequests({ initialTab = 'all' }) {
                   : 'border-gray-300 text-gray-600 hover:border-primary-400'
               }`}
             >
-              {s.label} ({stageCount(s.key)})
+              {t(s.labelKey)} ({stageCount(s.key)})
             </button>
           ))}
         </div>
@@ -154,31 +167,31 @@ export default function MyRequests({ initialTab = 'all' }) {
       {filtered.length === 0 ? (
         <EmptyState
           icon={ClipboardList}
-          title="No requests found"
-          subtitle="Submit a new request to get started"
+          title={t('staff.requests.empty.title')}
+          subtitle={t('staff.requests.empty.subtitle')}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Title</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Handled By</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('staff.requests.table.number')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.title')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.category')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.location')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.priority')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.status')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('staff.requests.table.handledBy')}</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.date')}</th>
                   <th scope="col" className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-surface divide-y divide-gray-200">
                 {filtered.map((item) => (
                   <tr key={`${item.type}-${item.id}`} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <Link to={item.link} className="text-sm font-medium text-primary-700 hover:underline">
+                      <Link to={item.link} className="text-sm font-medium text-brand-text-strong hover:underline">
                         {item.number}
                       </Link>
                     </td>
@@ -187,33 +200,35 @@ export default function MyRequests({ initialTab = 'all' }) {
                     <td className="px-4 py-3 text-sm text-gray-500">{item.location || <span className="text-gray-300">-</span>}</td>
                     <td className="px-4 py-3">
                       {item.priority
-                        ? <Badge color={priorityColor(item.priority)}>{item.priority}</Badge>
+                        ? <Badge color={priorityColor(item.priority)}>{priorityLabel(item.priority)}</Badge>
                         : <span className="text-gray-300">-</span>}
                     </td>
                     <td className="px-4 py-3">
-                      <Badge color={statusColor(item.status)}>{item.status}</Badge>
+                      <Badge color={statusColor(item.status)}>{statusLabel(item.status)}</Badge>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
                       {item.assignee
                         ? <span className="inline-flex items-center gap-1.5"><UserCircle2 className="w-3.5 h-3.5 text-gray-400" /> {item.assignee}</span>
-                        : <span className="text-gray-300">Not yet assigned</span>}
+                        : <span className="text-gray-300">{t('common.labels.unassigned')}</span>}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500">{formatDate(item.date)}</td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       {needsInfo(item) && (
                         <Link
                           to={item.link}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-orange-600 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-orange-soft-text hover:underline"
                         >
-                          <MessageCircle className="w-3.5 h-3.5" /> Provide info
+                          <MessageCircle className="w-3.5 h-3.5" /> {t('staff.requests.action.provideInfo')}
                         </Link>
                       )}
                       {needsConfirm(item) && (
                         <Link
                           to={item.link}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-brand-text hover:underline"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" /> {item.kind === 'maintenance' ? 'Confirm completion' : 'Confirm resolution'}
+                          <CheckCircle2 className="w-3.5 h-3.5" /> {item.kind === 'maintenance'
+                            ? t('staff.requests.action.confirmCompletion')
+                            : t('staff.requests.action.confirmResolution')}
                         </Link>
                       )}
                     </td>
@@ -227,8 +242,9 @@ export default function MyRequests({ initialTab = 'all' }) {
 
       <p className="text-xs text-gray-400 flex items-center gap-1.5">
         <Bell className="w-3.5 h-3.5" />
-        Every assignment, reply and status change also arrives in your{' '}
-        <Link to="/notifications" className="text-primary-600 hover:underline">notifications</Link>.
+        {t('staff.requests.footer.lead')}{' '}
+        <Link to="/notifications" className="text-brand-text hover:underline">{t('staff.requests.footer.notifications')}</Link>
+        {t('staff.requests.footer.tail')}
       </p>
     </div>
   );

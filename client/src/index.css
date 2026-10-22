@@ -41,6 +41,84 @@
   --color-success-800: #065f46;
   --color-success-900: #064e3b;
 
+  /* ─────────────────────────────────────────────────────────────────────────
+     Semantic tokens
+     Surfaces, brand text and status tints are theme aware: the dark theme
+     re-declares them under [data-theme="dark"], so every utility class that
+     uses them flips automatically — no per-element `dark:` variants needed.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-surface-raised: #f1f5f9;
+
+  /* Brand coloured text sitting on a surface (links, accents, counters) */
+  --color-brand-text: var(--color-primary-600);
+  --color-brand-text-strong: var(--color-primary-700);
+  --color-brand-text-deep: var(--color-primary-800);
+
+  /* Brand tints */
+  --color-primary-soft: #eff6ff;
+  --color-primary-soft-strong: #dbeafe;
+  --color-primary-soft-border: #bfdbfe;
+  --color-accent-soft: #f0f9ff;
+  --color-accent-soft-text: #0369a1;
+
+  /* Status tints: background / stronger background / border / text */
+  --color-red-soft: #fef2f2;
+  --color-red-soft-strong: #fee2e2;
+  --color-red-soft-border: #fecaca;
+  --color-red-soft-text: #dc2626;
+
+  --color-green-soft: #f0fdf4;
+  --color-green-soft-strong: #dcfce7;
+  --color-green-soft-border: #bbf7d0;
+  --color-green-soft-text: #16a34a;
+
+  --color-yellow-soft: #fefce8;
+  --color-yellow-soft-strong: #fef9c3;
+  --color-yellow-soft-border: #fef08a;
+  --color-yellow-soft-text: #ca8a04;
+
+  --color-amber-soft: #fffbeb;
+  --color-amber-soft-strong: #fef3c7;
+  --color-amber-soft-border: #fde68a;
+  --color-amber-soft-text: #d97706;
+
+  --color-blue-soft: #eff6ff;
+  --color-blue-soft-strong: #dbeafe;
+  --color-blue-soft-border: #bfdbfe;
+  --color-blue-soft-text: #2563eb;
+
+  --color-indigo-soft: #eef2ff;
+  --color-indigo-soft-strong: #e0e7ff;
+  --color-indigo-soft-border: #c7d2fe;
+  --color-indigo-soft-text: #4f46e5;
+
+  --color-purple-soft: #faf5ff;
+  --color-purple-soft-strong: #f3e8ff;
+  --color-purple-soft-border: #e9d5ff;
+  --color-purple-soft-text: #9333ea;
+
+  --color-orange-soft: #fff7ed;
+  --color-orange-soft-strong: #ffedd5;
+  --color-orange-soft-border: #fed7aa;
+  --color-orange-soft-text: #ea580c;
+
+  --color-success-soft: #ecfdf5;
+  --color-success-soft-strong: #d1fae5;
+  --color-success-soft-border: #a7f3d0;
+  --color-success-soft-text: #059669;
+
+  --color-cyan-soft: #ecfeff;
+  --color-cyan-soft-strong: #cffafe;
+  --color-cyan-soft-border: #a5f3fc;
+  --color-cyan-soft-text: #0e7490;
+
+  --color-violet-soft: #f5f3ff;
+  --color-violet-soft-strong: #ede9fe;
+  --color-violet-soft-border: #ddd6fe;
+  --color-violet-soft-text: #7c3aed;
+
   /* Motion presets → animate-* utilities */
   --animate-fade-in: fade-in 0.5s ease-out both;
   --animate-fade-in-up: fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -186,18 +264,155 @@ html[data-density="compact"] {
   font-size: 15px;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark theme
+   `data-theme="dark"` is set on <html> by the ThemeProvider. The palette
+   overrides below re-point the design tokens so every existing utility
+   class renders correctly on dark surfaces — no `dark:` variants needed.
+
+   The overrides are scoped to `@media screen` so printed reports always
+   use the light palette (and never waste ink on a dark background).
+
+   The slate ramp is deliberately left untouched: it is only used by the
+   always-dark sign-in screen and the sidebar gradient.
+   ───────────────────────────────────────────────────────────────────────── */
+@media screen {
+  html[data-theme="dark"] {
+    /* Surfaces */
+    --color-surface: #111c30;
+    --color-surface-muted: #0b1220;
+    --color-surface-raised: #182234;
+
+    /* Brand text on dark surfaces */
+    --color-brand-text: var(--color-primary-300);
+    --color-brand-text-strong: var(--color-primary-200);
+    --color-brand-text-deep: var(--color-primary-100);
+
+    /* Brand tints */
+    --color-primary-soft: #12203c;
+    --color-primary-soft-strong: #17294a;
+    --color-primary-soft-border: #1d3760;
+    --color-accent-soft: #0c2942;
+    --color-accent-soft-text: #7dd3fc;
+
+    /* Status tints */
+    --color-red-soft: #2a1216;
+    --color-red-soft-strong: #3a1a1e;
+    --color-red-soft-border: #5c2429;
+    --color-red-soft-text: #fca5a5;
+
+    --color-green-soft: #0d2416;
+    --color-green-soft-strong: #12331f;
+    --color-green-soft-border: #1a4a2b;
+    --color-green-soft-text: #86efac;
+
+    --color-yellow-soft: #26200b;
+    --color-yellow-soft-strong: #33290f;
+    --color-yellow-soft-border: #4d3a14;
+    --color-yellow-soft-text: #fde047;
+
+    --color-amber-soft: #261a08;
+    --color-amber-soft-strong: #33260d;
+    --color-amber-soft-border: #4d3710;
+    --color-amber-soft-text: #fcd34d;
+
+    --color-blue-soft: #101c33;
+    --color-blue-soft-strong: #16294a;
+    --color-blue-soft-border: #1e3a6b;
+    --color-blue-soft-text: #93c5fd;
+
+    --color-indigo-soft: #171a33;
+    --color-indigo-soft-strong: #1f2347;
+    --color-indigo-soft-border: #2b3163;
+    --color-indigo-soft-text: #a5b4fc;
+
+    --color-purple-soft: #1f1533;
+    --color-purple-soft-strong: #2a1c44;
+    --color-purple-soft-border: #3c2565;
+    --color-purple-soft-text: #c4b5fd;
+
+    --color-orange-soft: #26150a;
+    --color-orange-soft-strong: #331c0c;
+    --color-orange-soft-border: #4f2b13;
+    --color-orange-soft-text: #fdba74;
+
+    --color-success-soft: #0c2a20;
+    --color-success-soft-strong: #113a2b;
+    --color-success-soft-border: #17513b;
+    --color-success-soft-text: #6ee7b7;
+
+    --color-cyan-soft: #0b2733;
+    --color-cyan-soft-strong: #103845;
+    --color-cyan-soft-border: #17505f;
+    --color-cyan-soft-text: #67e8f9;
+
+    --color-violet-soft: #1d1430;
+    --color-violet-soft-strong: #281c44;
+    --color-violet-soft-border: #3a2560;
+    --color-violet-soft-text: #c4b5fd;
+
+    /* Neutral ramp, inverted for dark surfaces */
+    --color-gray-50: #182234;
+    --color-gray-100: #1e2a3d;
+    --color-gray-200: #26334a;
+    --color-gray-300: #35425f;
+    --color-gray-400: #64748b;
+    --color-gray-500: #8b98ab;
+    --color-gray-600: #a8b4c6;
+    --color-gray-700: #c7d0dd;
+    --color-gray-800: #e6ebf2;
+    --color-gray-900: #f8fafc;
+    --color-gray-950: #ffffff;
+  }
+
+  html[data-theme="dark"] body {
+    background-color: #0b1220;
+    color: #e2e8f0;
+  }
+
+  html[data-theme="dark"] * {
+    scrollbar-color: #35425f transparent;
+  }
+
+  html[data-theme="dark"] *::-webkit-scrollbar-thumb {
+    background-color: #35425f;
+  }
+
+  html[data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+    background-color: #47587a;
+  }
+
+  /* Form controls that do not follow the palette automatically */
+  html[data-theme="dark"] input,
+  html[data-theme="dark"] textarea,
+  html[data-theme="dark"] select {
+    color-scheme: dark;
+  }
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  /* Ethiopic fallbacks are listed after the Latin stack: browsers fall back
+     per glyph, so Amharic text picks up Nirmala UI / Noto Sans Ethiopic
+     without shipping a web font. */
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    "Helvetica Neue", Arial, "Nirmala UI", "Nyala", "Abyssinica SIL",
+    "Noto Sans Ethiopic", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #1f2937;
   background-color: #f8fafc;
+}
+
+/* Amharic prefers the Ethiopic faces outright so mixed content keeps a
+   consistent rhythm. */
+html[data-lang="am"] body {
+  font-family: "Nirmala UI", "Nyala", "Abyssinica SIL", "Noto Sans Ethiopic",
+    "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 ::selection {

@@ -9,12 +9,14 @@ import BulkAssignModal from '../../components/BulkAssignModal';
 import Pagination from '../../components/Pagination';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
 import { downloadCSV } from '../../utils/csv';
+import { useTranslation } from '../../i18n';
 
 const PAGE_SIZE = 20;
 const WAITING_STATUSES = ['Waiting for Information'];
 
 export default function ITTicketList() {
   const { hasRole } = useAuth();
+  const { t, statusLabel, priorityLabel } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [allTickets, setAllTickets] = useState([]);
   const [stats, setStats] = useState(null);
@@ -66,7 +68,7 @@ export default function ITTicketList() {
         critical: all.filter((t) => t.priority_name === 'Critical').length,
       });
     } catch {
-      setError('Failed to load IT tickets');
+      setError(t('it.tickets.error.loadFailed'));
       setTickets([]);
       setAllTickets([]);
       setTotal(0);
@@ -120,8 +122,8 @@ export default function ITTicketList() {
     try {
       const results = await Promise.allSettled(selected.map((id) => api.put(`/tickets/${id}`, { assigned_to: technicianId })));
       const failed = results.filter((r) => r.status === 'rejected').length;
-      if (failed) toast.error(`${failed} of ${selected.length} tickets could not be assigned`);
-      else toast.success(`Assigned ${selected.length} ticket${selected.length === 1 ? '' : 's'}`);
+      if (failed) toast.error(t('it.tickets.toast.bulkAssignFailed', { failed, total: selected.length }));
+      else toast.success(t('it.tickets.toast.bulkAssignSuccess', { count: selected.length }));
       setSelected([]);
       setModalOpen(false);
       loadTickets();
@@ -131,36 +133,36 @@ export default function ITTicketList() {
   };
 
   const exportCSV = () => {
-    const rows = allTickets.map((t) => ({
-      number: t.ticket_number,
-      title: t.title,
-      category: t.category_name,
-      priority: t.priority_name,
-      status: t.status_name,
-      assigned_to: t.assignee_name || 'Unassigned',
-      department: t.department_name,
-      location: t.location || '',
-      created: t.created_at,
+    const rows = allTickets.map((ticket) => ({
+      number: ticket.ticket_number,
+      title: ticket.title,
+      category: ticket.category_name,
+      priority: ticket.priority_name,
+      status: ticket.status_name,
+      assigned_to: ticket.assignee_name || t('common.labels.unassigned'),
+      department: ticket.department_name,
+      location: ticket.location || '',
+      created: ticket.created_at,
     }));
-    if (!downloadCSV(rows, 'it-tickets')) toast.error('No tickets to export');
+    if (!downloadCSV(rows, 'it-tickets')) toast.error(t('common.myAssigned.noTicketsToExport'));
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">IT Tickets</h2>
-          <p className="text-gray-500 text-sm">View and manage IT support tickets</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('it.tickets.title')}</h2>
+          <p className="text-gray-500 text-sm">{t('it.tickets.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={exportCSV}
             className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
           >
-            <Download className="w-4 h-4" /> Export CSV
+            <Download className="w-4 h-4" /> {t('common.myAssigned.exportCsv')}
           </button>
           <div className="text-sm text-gray-500">
-            {loading ? 'Loading...' : `${total} ticket${total === 1 ? '' : 's'}`}
+            {loading ? t('common.empty.loading') : t('it.tickets.count', { count: total })}
           </div>
         </div>
       </div>
@@ -168,7 +170,7 @@ export default function ITTicketList() {
       <TicketStatTiles stats={stats} accent="blue" />
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-surface rounded-xl border border-gray-200 p-4">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           <div className="col-span-2 md:col-span-2 relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -176,40 +178,40 @@ export default function ITTicketList() {
               type="text"
               value={filters.search}
               onChange={(e) => setFilter('search', e.target.value)}
-              placeholder="Search ticket #, title, requester..."
-              aria-label="Search tickets"
+              placeholder={t('it.tickets.filter.searchPlaceholder')}
+              aria-label={t('it.tickets.aria.search')}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
           <select
             value={filters.status}
             onChange={(e) => setFilter('status', e.target.value)}
-            aria-label="Filter by status"
+            aria-label={t('common.myAssigned.filterByStatus')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="">All Statuses</option>
+            <option value="">{t('common.myAssigned.allStatuses')}</option>
             {statuses.map((s) => (
-              <option key={s.id} value={s.name}>{s.name}</option>
+              <option key={s.id} value={s.name}>{statusLabel(s.name)}</option>
             ))}
           </select>
           <select
             value={filters.priority}
             onChange={(e) => setFilter('priority', e.target.value)}
-            aria-label="Filter by priority"
+            aria-label={t('common.myAssigned.filterByPriority')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="">All Priorities</option>
+            <option value="">{t('common.myAssigned.allPriorities')}</option>
             {priorities.map((p) => (
-              <option key={p.id} value={p.name}>{p.name}</option>
+              <option key={p.id} value={p.name}>{priorityLabel(p.name)}</option>
             ))}
           </select>
           <select
             value={filters.department}
             onChange={(e) => setFilter('department', e.target.value)}
-            aria-label="Filter by department"
+            aria-label={t('it.tickets.aria.filterDepartment')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="">All Departments</option>
+            <option value="">{t('it.tickets.filter.allDepartments')}</option>
             {departments.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
@@ -217,10 +219,10 @@ export default function ITTicketList() {
           <select
             value={filters.category}
             onChange={(e) => setFilter('category', e.target.value)}
-            aria-label="Filter by category"
+            aria-label={t('it.tickets.aria.filterCategory')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="">All Categories</option>
+            <option value="">{t('it.tickets.filter.allCategories')}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
@@ -229,23 +231,23 @@ export default function ITTicketList() {
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm text-blue-soft-text hover:text-blue-soft-text"
           >
-            <FilterX className="w-4 h-4" /> Clear filters
+            <FilterX className="w-4 h-4" /> {t('common.myAssigned.clearFilters')}
           </button>
         )}
       </div>
 
       {canAssign && selected.length > 0 && (
-        <div className="flex items-center justify-between bg-primary-50 border border-primary-200 rounded-lg px-4 py-3">
-          <span className="text-sm font-medium text-primary-800">{selected.length} ticket{selected.length === 1 ? '' : 's'} selected</span>
+        <div className="flex items-center justify-between bg-primary-soft border border-primary-soft-border rounded-lg px-4 py-3">
+          <span className="text-sm font-medium text-brand-text-deep">{t('it.tickets.bulk.selected', { count: selected.length })}</span>
           <div className="flex items-center gap-2">
-            <button onClick={() => setSelected([])} className="text-sm text-gray-600 hover:text-gray-800">Clear</button>
+            <button onClick={() => setSelected([])} className="text-sm text-gray-600 hover:text-gray-800">{t('common.actions.clear')}</button>
             <button
               onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"
             >
-              <UserCheck className="w-4 h-4" /> Assign selected
+              <UserCheck className="w-4 h-4" /> {t('it.tickets.bulk.assignSelected')}
             </button>
           </div>
         </div>
@@ -254,24 +256,24 @@ export default function ITTicketList() {
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
-        <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+        <div className="bg-surface rounded-xl border border-red-soft-border p-8 text-center">
           <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-3" />
           <p className="text-gray-600 font-medium">{error}</p>
           <button
             onClick={() => { setPage(1); loadTickets(); }}
             className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
           >
-            <RefreshCw className="w-4 h-4" /> Retry
+            <RefreshCw className="w-4 h-4" /> {t('common.actions.retry')}
           </button>
         </div>
       ) : tickets.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="No IT tickets found"
-          subtitle={hasFilters ? 'Try adjusting your filters' : 'New tickets will appear here'}
+          title={t('it.tickets.empty.title')}
+          subtitle={hasFilters ? t('common.myAssigned.empty.filteredSubtitle') : t('it.tickets.empty.subtitle')}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
           <TicketTable
             tickets={tickets}
             type="it"

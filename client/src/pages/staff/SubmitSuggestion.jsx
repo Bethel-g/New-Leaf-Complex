@@ -5,8 +5,10 @@ import { Lightbulb, Upload, X, CheckCircle2, CalendarClock, Hash, ArrowRight } f
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../components/TicketTable';
+import { useTranslation } from '../../i18n';
 
 export default function SubmitSuggestion() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
@@ -26,7 +28,7 @@ export default function SubmitSuggestion() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) {
-      toast.error('Please enter a suggestion title');
+      toast.error(t('staff.suggestion.form.titleRequired'));
       return;
     }
     setSubmitting(true);
@@ -36,9 +38,9 @@ export default function SubmitSuggestion() {
       files.forEach((f) => fd.append('attachments', f));
       const res = await api.post('/suggestions', fd);
       setSubmitted({ suggestion_number: res.data.suggestion_number, created_at: new Date().toISOString() });
-      toast.success(`Suggestion ${res.data.suggestion_number} submitted successfully`);
+      toast.success(t('staff.suggestion.form.success', { number: res.data.suggestion_number }));
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit suggestion');
+      toast.error(err.response?.data?.message || t('staff.suggestion.form.failed'));
     } finally {
       setSubmitting(false);
     }
@@ -47,33 +49,33 @@ export default function SubmitSuggestion() {
   if (submitted) {
     return (
       <div className="max-w-xl mx-auto">
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-success-100 text-success-600 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-surface rounded-xl border border-gray-200 p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-success-soft-strong text-success-soft-text flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Suggestion Submitted</h2>
-          <p className="text-gray-500 mt-1">Thank you! Your improvement idea has been sent to the review team.</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('staff.suggestion.submitted.title')}</h2>
+          <p className="text-gray-500 mt-1">{t('staff.suggestion.submitted.message')}</p>
 
           <div className="mt-6 bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-3 text-left">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 flex items-center gap-2"><Hash className="w-3.5 h-3.5" /> Suggestion Number</span>
-              <span className="font-semibold text-primary-700">{submitted.suggestion_number}</span>
+              <span className="text-gray-500 flex items-center gap-2"><Hash className="w-3.5 h-3.5" /> {t('staff.suggestion.form.suggestionNumber')}</span>
+              <span className="font-semibold text-brand-text-strong">{submitted.suggestion_number}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 flex items-center gap-2"><CalendarClock className="w-3.5 h-3.5" /> Created</span>
+              <span className="text-gray-500 flex items-center gap-2"><CalendarClock className="w-3.5 h-3.5" /> {t('common.labels.created')}</span>
               <span className="font-medium text-gray-700">{formatDate(submitted.created_at)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Submitted By</span>
+              <span className="text-gray-500">{t('staff.form.submittedBy')}</span>
               <span className="font-medium text-gray-700">{user?.name}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Department</span>
+              <span className="text-gray-500">{t('common.labels.department')}</span>
               <span className="font-medium text-gray-700">{user?.department_name}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Status</span>
-              <span className="font-medium text-primary-700">Submitted</span>
+              <span className="text-gray-500">{t('common.labels.status')}</span>
+              <span className="font-medium text-brand-text-strong">{t('status.submitted')}</span>
             </div>
           </div>
 
@@ -82,13 +84,13 @@ export default function SubmitSuggestion() {
               to="/my-requests"
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700"
             >
-              View My Suggestions <ArrowRight className="w-4 h-4" />
+              {t('staff.suggestion.submitted.viewSuggestions')} <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={() => { setSubmitted(null); setForm({ title: '', problem: '', proposed_solution: '', expected_benefit: '' }); setFiles([]); }}
               className="px-5 py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50"
             >
-              Submit Another Suggestion
+              {t('staff.suggestion.form.submitAnother')}
             </button>
           </div>
         </div>
@@ -99,67 +101,67 @@ export default function SubmitSuggestion() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-11 h-11 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center">
+        <div className="w-11 h-11 rounded-lg bg-primary-soft-strong text-brand-text flex items-center justify-center">
           <Lightbulb className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Submit Staff Suggestion</h2>
-          <p className="text-sm text-gray-500">Share an idea to improve the hospital</p>
+          <h2 className="text-xl font-bold text-gray-800">{t('staff.suggestion.form.title')}</h2>
+          <p className="text-sm text-gray-500">{t('staff.suggestion.form.subtitle')}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-surface rounded-xl border border-gray-200 p-6 space-y-5">
         {/* Auto-recorded information */}
         <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="submitter" className="block text-sm font-medium text-gray-600 mb-1">Submitted By</label>
+            <label htmlFor="submitter" className="block text-sm font-medium text-gray-600 mb-1">{t('staff.form.submittedBy')}</label>
             <input
               id="submitter"
               type="text"
               value={user?.name || ''}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="department" className="block text-sm font-medium text-gray-600 mb-1">Department</label>
+            <label htmlFor="department" className="block text-sm font-medium text-gray-600 mb-1">{t('common.labels.department')}</label>
             <input
               id="department"
               type="text"
               value={user?.department_name || ''}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-500 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="suggestion-number" className="block text-sm font-medium text-gray-600 mb-1">Suggestion Number</label>
+            <label htmlFor="suggestion-number" className="block text-sm font-medium text-gray-600 mb-1">{t('staff.suggestion.form.suggestionNumber')}</label>
             <input
               id="suggestion-number"
               type="text"
-              value="Assigned automatically on submission"
+              value={t('staff.form.autoAssigned')}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
             />
           </div>
           <div>
-            <label htmlFor="created-date" className="block text-sm font-medium text-gray-600 mb-1">Created Date</label>
+            <label htmlFor="created-date" className="block text-sm font-medium text-gray-600 mb-1">{t('staff.form.createdDate')}</label>
             <input
               id="created-date"
               type="text"
               value={formatDate(new Date().toISOString())}
               disabled
               readOnly
-              className="w-full px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface border border-gray-200 text-sm text-gray-400 cursor-not-allowed"
             />
           </div>
         </div>
 
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Suggestion Title <span className="text-red-500">*</span>
+            {t('staff.suggestion.form.suggestionTitle')} <span className="text-red-soft-text">*</span>
           </label>
           <input
             id="title"
@@ -168,64 +170,64 @@ export default function SubmitSuggestion() {
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-            placeholder="e.g. Improve patient direction signs"
+            placeholder={t('staff.suggestion.form.titlePlaceholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="problem" className="block text-sm font-medium text-gray-700 mb-1">Problem / Opportunity</label>
+          <label htmlFor="problem" className="block text-sm font-medium text-gray-700 mb-1">{t('staff.suggestion.form.problemOpportunity')}</label>
           <textarea
             id="problem"
             value={form.problem}
             onChange={(e) => setForm({ ...form, problem: e.target.value })}
             rows={3}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-            placeholder="What problem or opportunity have you identified?"
+            placeholder={t('staff.suggestion.form.problemPlaceholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="proposed_solution" className="block text-sm font-medium text-gray-700 mb-1">Proposed Improvement</label>
+          <label htmlFor="proposed_solution" className="block text-sm font-medium text-gray-700 mb-1">{t('staff.suggestion.form.proposedImprovement')}</label>
           <textarea
             id="proposed_solution"
             value={form.proposed_solution}
             onChange={(e) => setForm({ ...form, proposed_solution: e.target.value })}
             rows={3}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-            placeholder="What is your proposed solution?"
+            placeholder={t('staff.suggestion.form.solutionPlaceholder')}
           />
         </div>
 
         <div>
-          <label htmlFor="expected_benefit" className="block text-sm font-medium text-gray-700 mb-1">Expected Benefit</label>
+          <label htmlFor="expected_benefit" className="block text-sm font-medium text-gray-700 mb-1">{t('staff.suggestion.form.expectedBenefit')}</label>
           <textarea
             id="expected_benefit"
             value={form.expected_benefit}
             onChange={(e) => setForm({ ...form, expected_benefit: e.target.value })}
             rows={3}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-            placeholder="What benefits do you expect?"
+            placeholder={t('staff.suggestion.form.benefitPlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Attachments (optional)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('staff.suggestion.form.attachmentsOptional')}</label>
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-600 hover:border-primary-400 cursor-pointer">
               <Upload className="w-4 h-4" />
-              Upload files
+              {t('staff.form.uploadFiles')}
               <input type="file" multiple onChange={handleFileChange} className="hidden" />
             </label>
             {files.map((f, i) => (
-              <div key={i} className="flex items-center gap-1 text-xs bg-primary-50 px-2 py-1 rounded">
+              <div key={i} className="flex items-center gap-1 text-xs bg-primary-soft px-2 py-1 rounded">
                 {f.name}
-                <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label={`Remove ${f.name}`}>
+                <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} aria-label={t('staff.form.removeFile', { name: f.name })}>
                   <X className="w-3 h-3" />
                 </button>
               </div>
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1.5">Up to 5 files, max 10 MB each.</p>
+          <p className="text-xs text-gray-400 mt-1.5">{t('staff.form.fileHint')}</p>
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
@@ -234,14 +236,14 @@ export default function SubmitSuggestion() {
             onClick={() => navigate(-1)}
             className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg"
           >
-            Cancel
+            {t('common.actions.cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 disabled:opacity-50"
           >
-            {submitting ? 'Submitting...' : 'Submit Suggestion'}
+            {submitting ? t('staff.form.submitting') : t('staff.suggestion.form.submit')}
           </button>
         </div>
       </form>

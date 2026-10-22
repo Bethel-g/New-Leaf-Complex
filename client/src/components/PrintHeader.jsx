@@ -1,10 +1,12 @@
 import { useSettings } from '../context/SettingsContext';
+import { useTranslation } from '../i18n';
 
 // Shown only when printing (`hidden print:block`). Pulls the hospital identity
 // from the public settings so printed reports carry the configured letterhead.
 export default function PrintHeader({ title }) {
   const { publicSettings } = useSettings();
-  const name = publicSettings.hospital_name || 'New Leaf Complex';
+  const { t } = useTranslation();
+  const name = publicSettings.hospital_name || t('shell.brand.name');
   const contact = [publicSettings.hospital_address, publicSettings.hospital_phone, publicSettings.hospital_email]
     .filter(Boolean)
     .join('  ·  ');

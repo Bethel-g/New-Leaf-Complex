@@ -5,8 +5,10 @@ import api from '../../services/api';
 import Modal from '../../components/Modal';
 import { Badge } from '../../components/Badge';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
+import { useTranslation } from '../../i18n';
 
 export default function UserManagement() {
+  const { t, roleLabel } = useTranslation();
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -50,28 +52,28 @@ export default function UserManagement() {
     try {
       if (modal === 'create') {
         await api.post('/users', form);
-        toast.success('User created');
+        toast.success(t('admin.users.toast.created'));
       } else {
         const rest = { ...form };
         delete rest.password;
         await api.put(`/users/${editingId}`, rest);
-        toast.success('User updated');
+        toast.success(t('admin.users.toast.updated'));
       }
       setModal(null);
       loadData();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      toast.error(err.response?.data?.message || t('admin.toast.operationFailed'));
     }
   };
 
   const handleDelete = async (user) => {
-    if (!window.confirm(`Delete user ${user.name}?`)) return;
+    if (!window.confirm(t('admin.users.confirmDelete', { name: user.name }))) return;
     try {
       await api.delete(`/users/${user.id}`);
-      toast.success('User deleted');
+      toast.success(t('admin.users.toast.deleted'));
       loadData();
     } catch {
-      toast.error('Failed to delete user');
+      toast.error(t('admin.users.toast.deleteFailed'));
     }
   };
 
@@ -79,10 +81,10 @@ export default function UserManagement() {
     e.preventDefault();
     try {
       await api.put(`/users/${passwordModal.id}/password`, { password: passwordModal.password });
-      toast.success('Password updated');
+      toast.success(t('admin.users.toast.passwordUpdated'));
       setPasswordModal(null);
     } catch {
-      toast.error('Failed to update password');
+      toast.error(t('admin.users.toast.passwordUpdateFailed'));
     }
   };
 
@@ -90,31 +92,31 @@ export default function UserManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
-          <p className="text-gray-500 text-sm">Manage system users and roles</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('admin.users.pageTitle')}</h2>
+          <p className="text-gray-500 text-sm">{t('admin.users.pageSubtitle')}</p>
         </div>
         <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
-          <Plus className="w-4 h-4" /> New User
+          <Plus className="w-4 h-4" /> {t('admin.users.action.new')}
         </button>
       </div>
 
       {loading ? (
         <LoadingSpinner />
       ) : users.length === 0 ? (
-        <EmptyState icon={Users} title="No users yet" />
+        <EmptyState icon={Users} title={t('admin.users.empty')} />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Emp. ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Role</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.name')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.email')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('admin.users.table.employeeId')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.department')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.role')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.status')}</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">{t('common.labels.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -122,7 +124,7 @@ export default function UserManagement() {
                   <tr key={u.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-semibold">
+                        <div className="w-8 h-8 rounded-full bg-primary-soft-strong text-brand-text-strong flex items-center justify-center text-sm font-semibold">
                           {u.name?.charAt(0)?.toUpperCase()}
                         </div>
                         <span className="text-sm font-medium text-gray-800">{u.name}</span>
@@ -133,21 +135,21 @@ export default function UserManagement() {
                     <td className="px-4 py-3 text-sm text-gray-600">{u.department_name}</td>
                     <td className="px-4 py-3">
                       <Badge color={u.role_name.includes('admin') ? 'purple' : u.role_name.includes('supervisor') ? 'blue' : 'green'}>
-                        {u.role_name?.replace(/_/g, ' ')}
+                        {roleLabel(u.role_name)}
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge color={u.is_active ? 'green' : 'gray'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
+                      <Badge color={u.is_active ? 'green' : 'gray'}>{u.is_active ? t('admin.users.status.active') : t('admin.users.status.inactive')}</Badge>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
-                        <button onClick={() => openEdit(u)} className="p-1.5 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg">
+                        <button onClick={() => openEdit(u)} aria-label={t('admin.users.aria.edit')} title={t('admin.users.aria.edit')} className="p-1.5 text-gray-500 hover:text-brand-text hover:bg-primary-soft rounded-lg">
                           <Edit3 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setPasswordModal({ id: u.id, name: u.name, password: '' })} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                        <button onClick={() => setPasswordModal({ id: u.id, name: u.name, password: '' })} aria-label={t('admin.users.aria.resetPassword')} title={t('admin.users.aria.resetPassword')} className="p-1.5 text-gray-500 hover:text-blue-soft-text hover:bg-blue-soft rounded-lg">
                           <LockKeyhole className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete(u)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                        <button onClick={() => handleDelete(u)} aria-label={t('admin.users.aria.delete')} title={t('admin.users.aria.delete')} className="p-1.5 text-gray-500 hover:text-red-soft-text hover:bg-red-soft rounded-lg">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -161,78 +163,78 @@ export default function UserManagement() {
       )}
 
       {/* Create/Edit modal */}
-      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'create' ? 'Create User' : 'Edit User'}>
+      <Modal open={modal !== null} onClose={() => setModal(null)} title={modal === 'create' ? t('admin.users.modal.createTitle') : t('admin.users.modal.editTitle')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.fullName')}</label>
               <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('common.profile.employeeId')}</label>
               <input value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.email')}</label>
             <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
           </div>
           {modal === 'create' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.password')}</label>
               <input required type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
             </div>
           )}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.department')}</label>
               <select required value={form.department_id} onChange={(e) => setForm({ ...form, department_id: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                <option value="">Select</option>
+                <option value="">{t('admin.users.form.select')}</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.role')}</label>
               <select required value={form.role_id} onChange={(e) => setForm({ ...form, role_id: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                <option value="">Select</option>
-                {roles.map((r) => <option key={r.id} value={r.id}>{r.name.replace(/_/g, ' ')}</option>)}
+                <option value="">{t('admin.users.form.select')}</option>
+                {roles.map((r) => <option key={r.id} value={r.id}>{roleLabel(r.name)}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('common.labels.phone')}</label>
             <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
           </div>
           <label className="flex items-center gap-2 text-sm text-gray-600">
             <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="rounded" />
-            Active account
+            {t('admin.users.form.activeAccount')}
           </label>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setModal(null)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+            <button type="button" onClick={() => setModal(null)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">{t('common.actions.cancel')}</button>
             <button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
-              {modal === 'create' ? 'Create' : 'Save'}
+              {modal === 'create' ? t('admin.users.action.create') : t('common.actions.save')}
             </button>
           </div>
         </form>
       </Modal>
 
       {/* Password modal */}
-      <Modal open={passwordModal !== null} onClose={() => setPasswordModal(null)} title="Reset Password">
+      <Modal open={passwordModal !== null} onClose={() => setPasswordModal(null)} title={t('admin.users.modal.resetTitle')}>
         <form onSubmit={handleResetPassword} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">User: {passwordModal?.name}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.users.form.userLabel', { name: passwordModal?.name })}</label>
             <input
               type="password"
               required
               value={passwordModal?.password || ''}
               onChange={(e) => setPasswordModal({ ...passwordModal, password: e.target.value })}
-              placeholder="New password"
+              placeholder={t('admin.users.form.newPasswordPlaceholder')}
               className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm"
             />
           </div>
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={() => setPasswordModal(null)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Update</button>
+            <button type="button" onClick={() => setPasswordModal(null)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">{t('common.actions.cancel')}</button>
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">{t('common.actions.update')}</button>
           </div>
         </form>
       </Modal>

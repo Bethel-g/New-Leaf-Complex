@@ -1,6 +1,9 @@
 /**
  * Single source of truth for the sidebar navigation, driven by role.
  * The backend remains authoritative for authorization; this only shapes the UI.
+ *
+ * Labels are translation keys — the shell resolves them through the i18n
+ * dictionary, so every locale gets its own wording.
  */
 import {
   LayoutDashboard, MonitorCog, Wrench, Lightbulb, ClipboardList, Bell, FileText,
@@ -50,59 +53,59 @@ export const ROLE_HOME = {
   sys_admin: '/admin',
 };
 
-const GENERAL_DASHBOARD = { to: '/dashboard', icon: 'dashboard', label: 'Dashboard' };
+const GENERAL_DASHBOARD = { to: '/dashboard', icon: 'dashboard', labelKey: 'nav.dashboard' };
 
 const STAFF = [
   {
-    title: 'General',
+    titleKey: 'nav.group.general',
     items: [GENERAL_DASHBOARD],
   },
   {
-    title: 'Requests',
+    titleKey: 'nav.group.requests',
     items: [
-      { to: '/submit-it', icon: 'it', label: 'New IT Request' },
-      { to: '/submit-maintenance', icon: 'maintenance', label: 'New Maintenance Request' },
-      { to: '/submit-suggestion', icon: 'suggestion', label: 'New Suggestion' },
+      { to: '/submit-it', icon: 'it', labelKey: 'nav.newItRequest' },
+      { to: '/submit-maintenance', icon: 'maintenance', labelKey: 'nav.newMaintenanceRequest' },
+      { to: '/submit-suggestion', icon: 'suggestion', labelKey: 'nav.newSuggestion' },
     ],
   },
   {
-    title: 'My Area',
+    titleKey: 'nav.group.myArea',
     items: [
-      { to: '/my-requests', icon: 'my-requests', label: 'My Requests' },
-      { to: '/my-suggestions', icon: 'suggestions', label: 'My Suggestions' },
-      { to: '/notifications', icon: 'notifications', label: 'Notifications' },
+      { to: '/my-requests', icon: 'my-requests', labelKey: 'nav.myRequests' },
+      { to: '/my-suggestions', icon: 'suggestions', labelKey: 'nav.mySuggestions' },
+      { to: '/notifications', icon: 'notifications', labelKey: 'nav.notifications' },
     ],
   },
 ];
 
 function multimediaGroups(canManage) {
   const items = [
-    { to: '/multimedia', icon: 'multimedia-dashboard', label: 'Multimedia Home' },
-    { to: '/multimedia/devices', icon: 'multimedia-devices', label: 'Devices' },
-    { to: '/multimedia/broadcast', icon: 'multimedia-broadcast', label: 'Broadcast' },
-    { to: '/multimedia/media', icon: 'multimedia-media', label: 'Media Library' },
-    { to: '/multimedia/groups', icon: 'multimedia-groups', label: 'Groups' },
-    { to: '/multimedia/locations', icon: 'multimedia-locations', label: 'Locations' },
-    { to: '/multimedia/schedules', icon: 'multimedia-schedules', label: 'Schedules' },
-    { to: '/multimedia/history', icon: 'multimedia-history', label: 'History' },
-    { to: '/multimedia/commands', icon: 'multimedia-commands', label: 'Commands' },
+    { to: '/multimedia', icon: 'multimedia-dashboard', labelKey: 'nav.multimediaHome' },
+    { to: '/multimedia/devices', icon: 'multimedia-devices', labelKey: 'nav.devices' },
+    { to: '/multimedia/broadcast', icon: 'multimedia-broadcast', labelKey: 'nav.broadcast' },
+    { to: '/multimedia/media', icon: 'multimedia-media', labelKey: 'nav.mediaLibrary' },
+    { to: '/multimedia/groups', icon: 'multimedia-groups', labelKey: 'nav.groups' },
+    { to: '/multimedia/locations', icon: 'multimedia-locations', labelKey: 'nav.locations' },
+    { to: '/multimedia/schedules', icon: 'multimedia-schedules', labelKey: 'nav.schedules' },
+    { to: '/multimedia/history', icon: 'multimedia-history', labelKey: 'nav.history' },
+    { to: '/multimedia/commands', icon: 'multimedia-commands', labelKey: 'nav.commands' },
   ];
   if (canManage) {
-    items.push({ to: '/multimedia/settings', icon: 'multimedia-settings', label: 'Settings & Audit' });
+    items.push({ to: '/multimedia/settings', icon: 'multimedia-settings', labelKey: 'nav.settingsAudit' });
   }
-  return [{ title: 'Digital Signage', items }];
+  return [{ titleKey: 'nav.group.signage', items }];
 }
 
 const IT_TICKETS = [
   {
-    title: 'General',
+    titleKey: 'nav.group.general',
     items: [{ ...GENERAL_DASHBOARD, to: '/it' }],
   },
   {
-    title: 'Tickets',
+    titleKey: 'nav.group.tickets',
     items: [
-      { to: '/it/tickets', icon: 'it-tickets', label: 'IT Tickets' },
-      { to: '/it/my-assigned', icon: 'assigned', label: 'My Assigned Tickets' },
+      { to: '/it/tickets', icon: 'it-tickets', labelKey: 'nav.itTickets' },
+      { to: '/it/my-assigned', icon: 'assigned', labelKey: 'nav.myAssignedTickets' },
     ],
   },
 ];
@@ -112,38 +115,38 @@ const IT_STAFF = [...IT_TICKETS, ...multimediaGroups(false)];
 
 const MAINTENANCE = [
   {
-    title: 'General',
+    titleKey: 'nav.group.general',
     items: [{ ...GENERAL_DASHBOARD, to: '/maintenance' }],
   },
   {
-    title: 'Tickets',
+    titleKey: 'nav.group.tickets',
     items: [
-      { to: '/maintenance/tickets', icon: 'maintenance-tickets', label: 'Maintenance Tickets' },
-      { to: '/maintenance/my-assigned', icon: 'assigned', label: 'My Assigned Tickets' },
+      { to: '/maintenance/tickets', icon: 'maintenance-tickets', labelKey: 'nav.maintenanceTickets' },
+      { to: '/maintenance/my-assigned', icon: 'assigned', labelKey: 'nav.myAssignedTickets' },
     ],
   },
 ];
 
 const ADMIN_BASE = [
   {
-    title: 'General',
+    titleKey: 'nav.group.general',
     items: [{ ...GENERAL_DASHBOARD, to: '/admin' }],
   },
   {
-    title: 'Operations',
+    titleKey: 'nav.group.operations',
     items: [
-      { to: '/admin/all-requests', icon: 'all-requests', label: 'All Requests' },
-      { to: '/it/tickets', icon: 'it-tickets', label: 'IT Tickets' },
-      { to: '/maintenance/tickets', icon: 'maintenance-tickets', label: 'Maintenance Tickets' },
+      { to: '/admin/all-requests', icon: 'all-requests', labelKey: 'nav.allRequests' },
+      { to: '/it/tickets', icon: 'it-tickets', labelKey: 'nav.itTickets' },
+      { to: '/maintenance/tickets', icon: 'maintenance-tickets', labelKey: 'nav.maintenanceTickets' },
     ],
   },
   {
-    title: 'Quality',
-    items: [{ to: '/admin/suggestions', icon: 'suggestions', label: 'Suggestions' }],
+    titleKey: 'nav.group.quality',
+    items: [{ to: '/admin/suggestions', icon: 'suggestions', labelKey: 'nav.suggestions' }],
   },
   {
-    title: 'Reporting',
-    items: [{ to: '/admin/reports', icon: 'reports', label: 'Reports' }],
+    titleKey: 'nav.group.reporting',
+    items: [{ to: '/admin/reports', icon: 'reports', labelKey: 'nav.reports' }],
   },
   ...multimediaGroups(true),
 ];
@@ -151,13 +154,13 @@ const ADMIN_BASE = [
 const SYS_ADMIN = [
   ...ADMIN_BASE,
   {
-    title: 'Administration',
+    titleKey: 'nav.group.administration',
     items: [
-      { to: '/admin/users', icon: 'users', label: 'Users' },
-      { to: '/admin/departments', icon: 'departments', label: 'Departments' },
-      { to: '/admin/categories', icon: 'categories', label: 'Categories' },
-      { to: '/admin/settings', icon: 'settings', label: 'Settings' },
-      { to: '/admin/activity-log', icon: 'audit', label: 'Audit Logs' },
+      { to: '/admin/users', icon: 'users', labelKey: 'nav.users' },
+      { to: '/admin/departments', icon: 'departments', labelKey: 'nav.departments' },
+      { to: '/admin/categories', icon: 'categories', labelKey: 'nav.categories' },
+      { to: '/admin/settings', icon: 'settings', labelKey: 'nav.settings' },
+      { to: '/admin/activity-log', icon: 'audit', labelKey: 'nav.auditLogs' },
     ],
   },
 ];
@@ -176,6 +179,6 @@ export function getNavGroups(role) {
   return NAV_BY_ROLE[role] || STAFF;
 }
 
-export function getNavLabels(role) {
-  return getNavGroups(role).flatMap((g) => g.items.map((i) => i.label));
+export function getNavLabelKeys(role) {
+  return getNavGroups(role).flatMap((g) => g.items.map((i) => i.labelKey));
 }

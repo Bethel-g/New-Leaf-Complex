@@ -1,5 +1,6 @@
 import { History } from 'lucide-react';
 import { formatDate } from './TicketTable';
+import { useTranslation } from '../i18n';
 
 /**
  * Every recorded change on a ticket or a suggestion, oldest first.
@@ -8,23 +9,23 @@ import { formatDate } from './TicketTable';
  * them together and any action this component has not seen falls back to a
  * readable form of the action name rather than disappearing.
  */
-const ACTION_LABELS = {
-  created: 'created the request',
-  assigned: 'assigned the request',
-  assigned_department_changed: 'changed the assigned department',
-  assigned_person_changed: 'changed the responsible staff member',
-  status_changed: 'changed the status',
-  priority_changed: 'changed the priority',
-  comment_added: 'added a comment',
-  attachment_added: 'attached a file',
-  attachment_removed: 'removed a file',
-  information_provided: 'provided the requested information',
-  work_notes_added: 'added work notes',
-  resolved: 'resolved the request',
-  completed: 'completed the work',
-  reopened: 'reopened the request',
-  closed: 'closed the request',
-  rejected: 'rejected the suggestion',
+const ACTION_KEYS = {
+  created: 'common.timeline.created',
+  assigned: 'common.timeline.assigned',
+  assigned_department_changed: 'common.timeline.assignedDepartmentChanged',
+  assigned_person_changed: 'common.timeline.assignedPersonChanged',
+  status_changed: 'common.timeline.statusChanged',
+  priority_changed: 'common.timeline.priorityChanged',
+  comment_added: 'common.timeline.commentAdded',
+  attachment_added: 'common.timeline.attachmentAdded',
+  attachment_removed: 'common.timeline.attachmentRemoved',
+  information_provided: 'common.timeline.informationProvided',
+  work_notes_added: 'common.timeline.workNotesAdded',
+  resolved: 'common.timeline.resolved',
+  completed: 'common.timeline.completed',
+  reopened: 'common.timeline.reopened',
+  closed: 'common.timeline.closed',
+  rejected: 'common.timeline.rejected',
 };
 
 const SUMMARY_ACTIONS = new Set(['comment_added', 'work_notes_added', 'resolved', 'completed']);
@@ -43,26 +44,29 @@ const DOT_COLORS = {
   closed: 'bg-gray-400',
 };
 
-function humanize(action) {
-  const known = ACTION_LABELS[action];
-  if (known) return known;
+function humanize(action, t) {
+  const key = ACTION_KEYS[action];
+  if (key) return t(key);
   const spaced = String(action || '').replace(/_/g, ' ');
-  return `updated the request (${spaced})`;
+  return t('common.timeline.unknown', { action: spaced });
 }
 
-export default function TaskTimeline({ history, title = 'History', emptyText = 'Nothing has happened yet' }) {
+export default function TaskTimeline({ history, title, emptyText }) {
+  const { t } = useTranslation();
   const entries = history || [];
+  const heading = title || t('common.labels.history');
+  const emptyMessage = emptyText || t('common.timeline.empty');
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-200 flex items-center gap-2">
-        <History className="w-4 h-4 text-blue-600" />
-        <h3 className="font-semibold text-gray-800">{title}</h3>
-        {entries.length > 0 && <span className="text-xs text-gray-400">{entries.length} entries</span>}
+        <History className="w-4 h-4 text-blue-soft-text" />
+        <h3 className="font-semibold text-gray-800">{heading}</h3>
+        {entries.length > 0 && <span className="text-xs text-gray-400">{t('common.timeline.entries', { count: entries.length })}</span>}
       </div>
       <div className="px-5 py-4">
         {entries.length === 0 ? (
-          <div className="text-gray-400 text-sm">{emptyText}</div>
+          <div className="text-gray-400 text-sm">{emptyMessage}</div>
         ) : (
           <ol className="space-y-3">
             {entries.map((h, i) => (
@@ -73,11 +77,11 @@ export default function TaskTimeline({ history, title = 'History', emptyText = '
                 </div>
                 <div className="pb-2 min-w-0">
                   <div className="text-sm text-gray-700">
-                    <span className="font-medium text-gray-800">{h.user_name || 'System'}</span> {humanize(h.action)}
+                    <span className="font-medium text-gray-800">{h.user_name || t('common.timeline.system')}</span> {humanize(h.action, t)}
                   </div>
                   {TRANSITION_ACTIONS.has(h.action) && (h.old_value || h.new_value) && (
                     <div className="text-sm text-gray-500 mt-0.5">
-                      {h.old_value || 'none'} → <span className="font-medium text-gray-700">{h.new_value || 'none'}</span>
+                      {h.old_value || t('common.timeline.none')} → <span className="font-medium text-gray-700">{h.new_value || t('common.timeline.none')}</span>
                     </div>
                   )}
                   {SUMMARY_ACTIONS.has(h.action) && h.new_value && (

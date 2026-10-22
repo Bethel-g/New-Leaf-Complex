@@ -1,14 +1,14 @@
 export function Badge({ children, color = 'gray' }) {
   const colors = {
     gray: 'bg-gray-100 text-gray-700',
-    green: 'bg-success-100 text-success-700',
-    red: 'bg-red-100 text-red-700',
-    yellow: 'bg-yellow-100 text-yellow-700',
-    blue: 'bg-blue-100 text-blue-700',
-    purple: 'bg-purple-100 text-purple-700',
-    orange: 'bg-orange-100 text-orange-700',
-    cyan: 'bg-cyan-100 text-cyan-700',
-    indigo: 'bg-indigo-100 text-indigo-700',
+    green: 'bg-success-soft-strong text-success-soft-text',
+    red: 'bg-red-soft-strong text-red-soft-text',
+    yellow: 'bg-yellow-soft-strong text-yellow-soft-text',
+    blue: 'bg-blue-soft-strong text-blue-soft-text',
+    purple: 'bg-purple-soft-strong text-purple-soft-text',
+    orange: 'bg-orange-soft-strong text-orange-soft-text',
+    cyan: 'bg-cyan-soft-strong text-cyan-soft-text',
+    indigo: 'bg-indigo-soft-strong text-indigo-soft-text',
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[color] || colors.gray}`}>

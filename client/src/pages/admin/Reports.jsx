@@ -9,13 +9,14 @@ import api from '../../services/api';
 import StatCard from '../../components/StatCard';
 import PrintHeader from '../../components/PrintHeader';
 import { Badge, statusColor, priorityColor } from '../../components/Badge';
-import { formatDate } from '../../components/TicketTable';
 import { downloadCSV } from '../../utils/csv';
+import { useTranslation } from '../../i18n';
 
 const NOW = Date.now();
 const PIE_COLORS = ['#2563eb', '#0ea5e9', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6b7280'];
 
 export default function Reports() {
+  const { t, statusLabel, priorityLabel, typeLabel, formatDate, formatNumber } = useTranslation();
   const [stats, setStats] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -26,20 +27,20 @@ export default function Reports() {
       api.get('/dashboard'),
       api.get('/tickets', { params: { limit: 500 } }),
       api.get('/suggestions', { params: { limit: 500 } }),
-    ]).then(([d, t, s]) => {
+    ]).then(([d, ticketRes, s]) => {
       setStats(d.data);
-      setTickets(t.data.tickets);
+      setTickets(ticketRes.data.tickets);
       setSuggestions(s.data.suggestions);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
   const averageResolutionTime = useMemo(() => {
-    const resolved = tickets.filter((t) => ['Resolved', 'Completed', 'Closed'].includes(t.status_name));
+    const resolved = tickets.filter((tk) => ['Resolved', 'Completed', 'Closed'].includes(tk.status_name));
     if (resolved.length === 0) return 0;
-    const total = resolved.reduce((sum, t) => {
-      const created = new Date(t.created_at);
-      const end = new Date(t.resolved_date || t.updated_at);
+    const total = resolved.reduce((sum, tk) => {
+      const created = new Date(tk.created_at);
+      const end = new Date(tk.resolved_date || tk.updated_at);
       const endMs = Number.isFinite(end.getTime()) ? end.getTime() : NOW;
       return sum + (endMs - created.getTime()) / (1000 * 60 * 60 * 24);
     }, 0);
@@ -57,61 +58,72 @@ export default function Reports() {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       months.push({
         key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
-        label: d.toLocaleDateString('en-GB', { month: 'short' }),
+        label: formatDate(d, { month: 'short' }),
         IT: 0,
         Maintenance: 0,
         total: 0,
       });
     }
     const index = Object.fromEntries(months.map((m) => [m.key, m]));
-    tickets.forEach((t) => {
-      const d = new Date(t.created_at);
+    tickets.forEach((tk) => {
+      const d = new Date(tk.created_at);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       const m = index[key];
       if (!m) return;
-      if (t.type === 'it') m.IT += 1;
-      else if (t.type === 'maintenance') m.Maintenance += 1;
+      if (tk.type === 'it') m.IT += 1;
+      else if (tk.type === 'maintenance') m.Maintenance += 1;
       m.total += 1;
     });
     return months;
-  }, [tickets]);
+  }, [tickets, formatDate]);
 
   const statusData = useMemo(() => {
     const map = {};
-    tickets.forEach((t) => { map[t.status_name] = (map[t.status_name] || 0) + 1; });
-    return Object.entries(map).map(([name, value]) => ({ name, value }));
-  }, [tickets]);
+    tickets.forEach((tk) => { map[tk.status_name] = (map[tk.status_name] || 0) + 1; });
+    return Object.entries(map).map(([name, value]) => ({ key: name, name: statusLabel(name), value }));
+  }, [tickets, statusLabel]);
 
   const byType = useMemo(() => ([
-    { name: 'IT', count: tickets.filter((t) => t.type === 'it').length },
-    { name: 'Maintenance', count: tickets.filter((t) => t.type === 'maintenance').length },
-  ]), [tickets]);
+    { name: typeLabel('it'), count: tickets.filter((tk) => tk.type === 'it').length },
+    { name: typeLabel('maintenance'), count: tickets.filter((tk) => tk.type === 'maintenance').length },
+  ]), [tickets, typeLabel]);
 
   const topRequesters = useMemo(() => {
     const map = {};
-    tickets.forEach((t) => { const n = t.requester_name || 'Unknown'; map[n] = (map[n] || 0) + 1; });
+    tickets.forEach((tk) => { const n = tk.requester_name || t('admin.reports.unknownRequester'); map[n] = (map[n] || 0) + 1; });
     return Object.entries(map).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 6);
-  }, [tickets]);
+  }, [tickets, t]);
 
   const suggestionPipeline = useMemo(() => {
     const map = {};
     suggestions.forEach((s) => { map[s.status_name] = (map[s.status_name] || 0) + 1; });
-    return Object.entries(map).map(([name, count]) => ({ name, count }));
-  }, [suggestions]);
+    return Object.entries(map).map(([name, count]) => ({ name: statusLabel(name), count }));
+  }, [suggestions, statusLabel]);
 
   const exportCSV = () => {
-    const rows = tickets.map((t) => ({
-      number: t.ticket_number,
-      title: t.title,
-      type: t.type,
-      requester: t.requester_name,
-      department: t.department_name,
-      category: t.category_name,
-      priority: t.priority_name,
-      status: t.status_name,
-      created: formatDate(t.created_at),
+    const headers = {
+      number: t('admin.requests.csv.number'),
+      title: t('common.labels.title'),
+      type: t('common.labels.type'),
+      requester: t('common.labels.requester'),
+      department: t('common.labels.department'),
+      category: t('common.labels.category'),
+      priority: t('common.labels.priority'),
+      status: t('common.labels.status'),
+      created: t('common.labels.date'),
+    };
+    const rows = tickets.map((tk) => ({
+      [headers.number]: tk.ticket_number,
+      [headers.title]: tk.title,
+      [headers.type]: typeLabel(tk.type),
+      [headers.requester]: tk.requester_name,
+      [headers.department]: tk.department_name,
+      [headers.category]: tk.category_name,
+      [headers.priority]: priorityLabel(tk.priority_name),
+      [headers.status]: statusLabel(tk.status_name),
+      [headers.created]: formatDate(tk.created_at),
     }));
-    if (!downloadCSV(rows, 'newleaf-tickets-report')) toast.error('No data to export');
+    if (!downloadCSV(rows, 'newleaf-tickets-report')) toast.error(t('admin.reports.toast.noDataToExport'));
   };
 
   const print = () => window.print();
@@ -120,36 +132,36 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <PrintHeader title="Operations Report" />
+      <PrintHeader title={t('admin.reports.printTitle')} />
       <div className="flex items-center justify-between print:hidden">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Reports</h2>
-          <p className="text-gray-500 text-sm">Generate management reports</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('nav.reports')}</h2>
+          <p className="text-gray-500 text-sm">{t('admin.reports.subtitle')}</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={print} className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-medium hover:bg-gray-700">
-            <Printer className="w-4 h-4" /> Print
+          <button onClick={print} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4b5563] text-white rounded-lg text-sm font-medium hover:bg-[#374151]">
+            <Printer className="w-4 h-4" /> {t('common.actions.print')}
           </button>
           <button
             onClick={exportCSV}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"
           >
-            <Download className="w-4 h-4" /> Export Report
+            <Download className="w-4 h-4" /> {t('admin.reports.export')}
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard title="Total Requests" value={stats?.totalTickets ?? 0} icon={BarChart3} color="blue" />
-        <StatCard title="Average Resolution Time" value={`${averageResolutionTime} days`} icon={BarChart3} color="primary" />
-        <StatCard title="Critical Open" value={stats?.criticalTickets ?? 0} icon={BarChart3} color="red" />
-        <StatCard title="Overdue Requests" value={stats?.overdueCount ?? 0} icon={BarChart3} color="orange" />
+        <StatCard title={t('admin.reports.stat.total')} value={formatNumber(stats?.totalTickets ?? 0)} icon={BarChart3} color="blue" />
+        <StatCard title={t('admin.reports.stat.avgResolution')} value={`${averageResolutionTime} ${t('admin.unit.daysLong')}`} icon={BarChart3} color="primary" />
+        <StatCard title={t('admin.reports.stat.criticalOpen')} value={formatNumber(stats?.criticalTickets ?? 0)} icon={BarChart3} color="red" />
+        <StatCard title={t('admin.reports.stat.overdue')} value={formatNumber(stats?.overdueCount ?? 0)} icon={BarChart3} color="orange" />
       </div>
 
       {/* Trend: monthly volume + IT/Maintenance split */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Request Volume by Month (IT vs Maintenance)</h3>
+        <div className="lg:col-span-2 bg-surface rounded-xl border border-gray-200 p-5">
+          <h3 className="font-semibold text-gray-800 mb-4">{t('admin.reports.chart.volumeByMonth')}</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthly} margin={{ top: 0, right: 8, bottom: 0, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -157,22 +169,22 @@ export default function Reports() {
               <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
               <Tooltip cursor={{ fill: '#f3f4f6' }} />
               <Legend />
-              <Bar dataKey="IT" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="Maintenance" stackId="a" fill="#f97316" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="IT" name={typeLabel('it')} stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="Maintenance" name={typeLabel('maintenance')} stackId="a" fill="#f97316" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Requests by Status</h3>
+        <div className="bg-surface rounded-xl border border-gray-200 p-5">
+          <h3 className="font-semibold text-gray-800 mb-4">{t('admin.reports.chart.byStatus')}</h3>
           {statusData.length === 0 ? (
-            <div className="py-10 text-center text-gray-400 text-sm">No data yet</div>
+            <div className="py-10 text-center text-gray-400 text-sm">{t('common.empty.noData')}</div>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={90} paddingAngle={2}>
                   {statusData.map((entry, i) => (
-                    <Cell key={entry.name} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    <Cell key={entry.key} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -184,8 +196,8 @@ export default function Reports() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Total Volume Trend (12 months)</h3>
+        <div className="bg-surface rounded-xl border border-gray-200 p-5">
+          <h3 className="font-semibold text-gray-800 mb-4">{t('admin.reports.chart.totalTrend')}</h3>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={monthly} margin={{ top: 0, right: 8, bottom: 0, left: -16 }}>
               <defs>
@@ -203,8 +215,8 @@ export default function Reports() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Requests by Type</h3>
+        <div className="bg-surface rounded-xl border border-gray-200 p-5">
+          <h3 className="font-semibold text-gray-800 mb-4">{t('admin.reports.chart.byType')}</h3>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={byType} margin={{ top: 0, right: 8, bottom: 0, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -218,23 +230,23 @@ export default function Reports() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-gray-200">
+        <div className="bg-surface rounded-xl border border-gray-200">
           <div className="px-5 py-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-800">Summary by Department</h3>
+            <h3 className="font-semibold text-gray-800">{t('admin.reports.summary.byDepartment')}</h3>
           </div>
           <div className="p-5">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs font-semibold text-gray-500 uppercase">
-                  <th className="pb-2">Department</th>
-                  <th className="pb-2 text-right">Requests</th>
+                  <th className="pb-2">{t('common.labels.department')}</th>
+                  <th className="pb-2 text-right">{t('admin.reports.summary.requests')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {stats?.byDepartment?.map((d) => (
                   <tr key={d.name}>
                     <td className="py-2 text-gray-700">{d.name}</td>
-                    <td className="py-2 text-right font-medium">{d.count}</td>
+                    <td className="py-2 text-right font-medium">{formatNumber(d.count)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -242,23 +254,23 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200">
+        <div className="bg-surface rounded-xl border border-gray-200">
           <div className="px-5 py-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-800">Summary by Category</h3>
+            <h3 className="font-semibold text-gray-800">{t('admin.reports.summary.byCategory')}</h3>
           </div>
           <div className="p-5">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs font-semibold text-gray-500 uppercase">
-                  <th className="pb-2">Category</th>
-                  <th className="pb-2 text-right">Requests</th>
+                  <th className="pb-2">{t('common.labels.category')}</th>
+                  <th className="pb-2 text-right">{t('admin.reports.summary.requests')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {stats?.byCategory?.map((c) => (
                   <tr key={c.name}>
                     <td className="py-2 text-gray-700">{c.name}</td>
-                    <td className="py-2 text-right font-medium">{c.count}</td>
+                    <td className="py-2 text-right font-medium">{formatNumber(c.count)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -269,26 +281,26 @@ export default function Reports() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Top requesters */}
-        <div className="bg-white rounded-xl border border-gray-200">
+        <div className="bg-surface rounded-xl border border-gray-200">
           <div className="px-5 py-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-800">Top Requesters</h3>
+            <h3 className="font-semibold text-gray-800">{t('admin.reports.topRequesters.title')}</h3>
           </div>
           {topRequesters.length === 0 ? (
-            <div className="px-5 py-8 text-center text-gray-400 text-sm">No data yet</div>
+            <div className="px-5 py-8 text-center text-gray-400 text-sm">{t('common.empty.noData')}</div>
           ) : (
             <div className="p-5">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs font-semibold text-gray-500 uppercase">
-                    <th className="pb-2">Requester</th>
-                    <th className="pb-2 text-right">Requests</th>
+                    <th className="pb-2">{t('common.labels.requester')}</th>
+                    <th className="pb-2 text-right">{t('admin.reports.summary.requests')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {topRequesters.map((r) => (
                     <tr key={r.name}>
                       <td className="py-2 text-gray-700">{r.name}</td>
-                      <td className="py-2 text-right font-medium">{r.count}</td>
+                      <td className="py-2 text-right font-medium">{formatNumber(r.count)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -298,10 +310,10 @@ export default function Reports() {
         </div>
 
         {/* Suggestion pipeline */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Suggestion Pipeline</h3>
+        <div className="bg-surface rounded-xl border border-gray-200 p-5">
+          <h3 className="font-semibold text-gray-800 mb-4">{t('admin.reports.suggestionPipeline.title')}</h3>
           {suggestionPipeline.length === 0 ? (
-            <div className="py-10 text-center text-gray-400 text-sm">No suggestions yet</div>
+            <div className="py-10 text-center text-gray-400 text-sm">{t('admin.reports.suggestionPipeline.empty')}</div>
           ) : (
             <ResponsiveContainer width="100%" height={Math.max(suggestionPipeline.length * 40, 180)}>
               <BarChart data={suggestionPipeline} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
@@ -317,37 +329,37 @@ export default function Reports() {
       </div>
 
       {/* Overdue */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-800">Overdue / Aging Requests</h3>
-          <p className="text-xs text-gray-400 mt-0.5">Measured against the SLA targets configured in Settings.</p>
+          <h3 className="font-semibold text-gray-800">{t('admin.reports.overdue.title')}</h3>
+          <p className="text-xs text-gray-400 mt-0.5">{t('admin.reports.overdue.hint')}</p>
         </div>
         {dueTickets.length === 0 ? (
-          <div className="px-5 py-8 text-center text-gray-400 text-sm">No overdue requests</div>
+          <div className="px-5 py-8 text-center text-gray-400 text-sm">{t('admin.reports.overdue.empty')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">No.</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Title</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Priority</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Created</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Days</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('admin.reports.overdue.table.number')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.title')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.department')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.priority')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.status')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('common.labels.created')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{t('admin.reports.overdue.table.days')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {dueTickets.map((t) => (
-                  <tr key={t.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-primary-700">{t.ticket_number}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700 max-w-[200px] truncate">{t.title}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{t.department_name}</td>
-                    <td className="px-4 py-3"><Badge color={priorityColor(t.priority_name)}>{t.priority_name}</Badge></td>
-                    <td className="px-4 py-3"><Badge color={statusColor(t.status_name)}>{t.status_name}</Badge></td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(t.created_at)}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-red-600">{Math.max(1, Math.floor((NOW - new Date(t.created_at)) / (1000 * 60 * 60 * 24)))}</td>
+                {dueTickets.map((tk) => (
+                  <tr key={tk.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-brand-text-strong">{tk.ticket_number}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700 max-w-[200px] truncate">{tk.title}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{tk.department_name}</td>
+                    <td className="px-4 py-3"><Badge color={priorityColor(tk.priority_name)}>{priorityLabel(tk.priority_name)}</Badge></td>
+                    <td className="px-4 py-3"><Badge color={statusColor(tk.status_name)}>{statusLabel(tk.status_name)}</Badge></td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(tk.created_at)}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-red-soft-text">{formatNumber(Math.max(1, Math.floor((NOW - new Date(tk.created_at)) / (1000 * 60 * 60 * 24))))}</td>
                   </tr>
                 ))}
               </tbody>

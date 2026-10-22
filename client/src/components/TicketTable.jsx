@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Badge, statusColor, priorityColor } from './Badge';
 import { useSettings } from '../context/SettingsContext';
+import { useTranslation, LOCALE_TAGS, getActiveLang } from '../i18n';
 
 // oxlint-disable-next-line react/only-export-components
 export function formatDate(dateStr) {
   if (!dateStr) return '-';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
-    d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const tag = LOCALE_TAGS[getActiveLang()] || LOCALE_TAGS.en;
+  return d.toLocaleDateString(tag, { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
+    d.toLocaleTimeString(tag, { hour: '2-digit', minute: '2-digit' });
 }
 
 // oxlint-disable-next-line react/only-export-components
@@ -23,6 +25,7 @@ export default function TicketTable({
   selectable = false, selectedIds = [], onToggle, onToggleAll, canSelect,
 }) {
   const { appearance } = useSettings();
+  const { t, statusLabel, priorityLabel } = useTranslation();
   const showRequester = appearance?.showRequester ?? true;
   const linkBase = type === 'it' ? '/it/tickets' : '/maintenance/tickets';
   const selected = new Set(selectedIds);
@@ -39,29 +42,29 @@ export default function TicketTable({
               <th className="px-4 py-3 w-10">
                 <input
                   type="checkbox"
-                  aria-label="Select all tickets on this page"
+                  aria-label={t('common.tickets.selectAll')}
                   checked={allSelected}
                   onChange={(e) => onToggleAll?.(e.target.checked, selectableIds)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  className="rounded border-gray-300 text-brand-text focus:ring-primary-500"
                 />
               </th>
             )}
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ticket</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.ticket')}</th>
             {showRequester && (
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Requester</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.requester')}</th>
             )}
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Assigned To</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.category')}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.priority')}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.status')}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.assignee')}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.labels.date')}</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-surface divide-y divide-gray-200">
           {tickets.length === 0 && (
             <tr>
               <td colSpan={colCount} className="px-4 py-8 text-center text-gray-400 text-sm">
-                No tickets found
+                {t('common.tickets.empty')}
               </td>
             </tr>
           )}
@@ -73,16 +76,16 @@ export default function TicketTable({
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
-                      aria-label={`Select ticket ${t.ticket_number}`}
+                      aria-label={t('common.tickets.select', { number: t.ticket_number })}
                       checked={selected.has(t.id)}
                       disabled={!canPick}
                       onChange={() => onToggle?.(t.id)}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 disabled:opacity-40"
+                      className="rounded border-gray-300 text-brand-text focus:ring-primary-500 disabled:opacity-40"
                     />
                   </td>
                 )}
                 <td className="px-4 py-3">
-                  <Link to={`${linkBase}/${t.id}`} className="text-sm font-medium text-primary-700 hover:underline">
+                  <Link to={`${linkBase}/${t.id}`} className="text-sm font-medium text-brand-text-strong hover:underline">
                     {t.ticket_number}
                   </Link>
                   <div className="text-xs text-gray-500 max-w-[200px] truncate">{t.title}</div>
@@ -92,10 +95,10 @@ export default function TicketTable({
                 )}
                 <td className="px-4 py-3 text-sm text-gray-600">{t.category_name}</td>
                 <td className="px-4 py-3">
-                  <Badge color={priorityColor(t.priority_name)}>{t.priority_name}</Badge>
+                  <Badge color={priorityColor(t.priority_name)}>{priorityLabel(t.priority_name)}</Badge>
                 </td>
                 <td className="px-4 py-3">
-                  <Badge color={statusColor(t.status_name)}>{t.status_name}</Badge>
+                  <Badge color={statusColor(t.status_name)}>{statusLabel(t.status_name)}</Badge>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600">{t.assignee_name || '-'}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">{formatDate(t.created_at)}</td>

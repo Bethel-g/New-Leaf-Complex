@@ -9,12 +9,14 @@ import BulkAssignModal from '../../components/BulkAssignModal';
 import Pagination from '../../components/Pagination';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
 import { downloadCSV } from '../../utils/csv';
+import { useTranslation } from '../../i18n';
 
 const PAGE_SIZE = 20;
 const WAITING_STATUSES = ['Waiting for Parts'];
 
 export default function MaintenanceTicketList() {
   const { hasRole } = useAuth();
+  const { t, statusLabel, priorityLabel } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [allTickets, setAllTickets] = useState([]);
   const [stats, setStats] = useState(null);
@@ -64,12 +66,12 @@ export default function MaintenanceTicketList() {
       setAllTickets(all);
       setStats({
         total: listRes.data.total,
-        unassigned: all.filter((t) => !t.assignee_name).length,
-        waiting: all.filter((t) => WAITING_STATUSES.includes(t.status_name)).length,
-        critical: all.filter((t) => t.priority_name === 'Critical').length,
+        unassigned: all.filter((ticket) => !ticket.assignee_name).length,
+        waiting: all.filter((ticket) => WAITING_STATUSES.includes(ticket.status_name)).length,
+        critical: all.filter((ticket) => ticket.priority_name === 'Critical').length,
       });
     } catch {
-      setError('Failed to load maintenance tickets');
+      setError(t('maintenance.tickets.error.loadFailed'));
       setTickets([]);
       setAllTickets([]);
       setTotal(0);
@@ -92,7 +94,7 @@ export default function MaintenanceTicketList() {
     api.get('/admin/priorities').then((res) => setPriorities(res.data)).catch(() => {});
     api.get('/users/technicians', { params: { type: 'maintenance' } }).then((res) => setTechnicians(res.data)).catch(() => {});
     api.get('/tickets', { params: { type: 'maintenance', limit: 200 } }).then((res) => {
-      const depts = [...new Set(res.data.tickets.map((t) => t.department_name).filter(Boolean))];
+      const depts = [...new Set(res.data.tickets.map((ticket) => ticket.department_name).filter(Boolean))];
       setDepartments(depts);
     }).catch(() => {});
   }, []);
@@ -121,8 +123,8 @@ export default function MaintenanceTicketList() {
     try {
       const results = await Promise.allSettled(selected.map((id) => api.put(`/tickets/${id}`, { assigned_to: technicianId })));
       const failed = results.filter((r) => r.status === 'rejected').length;
-      if (failed) toast.error(`${failed} of ${selected.length} tickets could not be assigned`);
-      else toast.success(`Assigned ${selected.length} ticket${selected.length === 1 ? '' : 's'}`);
+      if (failed) toast.error(t('maintenance.tickets.toast.bulkAssignFailed', { failed, total: selected.length }));
+      else toast.success(t('maintenance.tickets.toast.bulkAssignSuccess', { count: selected.length }));
       setSelected([]);
       setModalOpen(false);
       loadTickets();
@@ -132,36 +134,36 @@ export default function MaintenanceTicketList() {
   };
 
   const exportCSV = () => {
-    const rows = allTickets.map((t) => ({
-      number: t.ticket_number,
-      title: t.title,
-      category: t.category_name,
-      priority: t.priority_name,
-      status: t.status_name,
-      assigned_to: t.assignee_name || 'Unassigned',
-      department: t.department_name,
-      location: t.location || '',
-      created: t.created_at,
+    const rows = allTickets.map((ticket) => ({
+      number: ticket.ticket_number,
+      title: ticket.title,
+      category: ticket.category_name,
+      priority: ticket.priority_name,
+      status: ticket.status_name,
+      assigned_to: ticket.assignee_name || t('common.labels.unassigned'),
+      department: ticket.department_name,
+      location: ticket.location || '',
+      created: ticket.created_at,
     }));
-    if (!downloadCSV(rows, 'maintenance-tickets')) toast.error('No tickets to export');
+    if (!downloadCSV(rows, 'maintenance-tickets')) toast.error(t('common.myAssigned.noTicketsToExport'));
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Maintenance Tickets</h2>
-          <p className="text-gray-500 text-sm">View and manage maintenance requests</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('maintenance.tickets.title')}</h2>
+          <p className="text-gray-500 text-sm">{t('maintenance.tickets.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={exportCSV}
             className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
           >
-            <Download className="w-4 h-4" /> Export CSV
+            <Download className="w-4 h-4" /> {t('common.myAssigned.exportCsv')}
           </button>
           <div className="text-sm text-gray-500">
-            {loading ? 'Loading...' : `${total} ticket${total === 1 ? '' : 's'}`}
+            {loading ? t('common.empty.loading') : t('maintenance.tickets.count', { count: total })}
           </div>
         </div>
       </div>
@@ -169,7 +171,7 @@ export default function MaintenanceTicketList() {
       <TicketStatTiles stats={stats} accent="orange" />
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-surface rounded-xl border border-gray-200 p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="col-span-2 md:col-span-1 relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -177,40 +179,40 @@ export default function MaintenanceTicketList() {
               type="text"
               value={filters.search}
               onChange={(e) => setFilter('search', e.target.value)}
-              placeholder="Search ticket #, title..."
-              aria-label="Search tickets"
+              placeholder={t('common.myAssigned.searchPlaceholder')}
+              aria-label={t('maintenance.tickets.aria.search')}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
             />
           </div>
           <select
             value={filters.status}
             onChange={(e) => setFilter('status', e.target.value)}
-            aria-label="Filter by status"
+            aria-label={t('common.myAssigned.filterByStatus')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           >
-            <option value="">All Statuses</option>
+            <option value="">{t('common.myAssigned.allStatuses')}</option>
             {statuses.map((s) => (
-              <option key={s.id} value={s.name}>{s.name}</option>
+              <option key={s.id} value={s.name}>{statusLabel(s.name)}</option>
             ))}
           </select>
           <select
             value={filters.priority}
             onChange={(e) => setFilter('priority', e.target.value)}
-            aria-label="Filter by priority"
+            aria-label={t('common.myAssigned.filterByPriority')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           >
-            <option value="">All Priorities</option>
+            <option value="">{t('common.myAssigned.allPriorities')}</option>
             {priorities.map((p) => (
-              <option key={p.id} value={p.name}>{p.name}</option>
+              <option key={p.id} value={p.name}>{priorityLabel(p.name)}</option>
             ))}
           </select>
           <select
             value={filters.department}
             onChange={(e) => setFilter('department', e.target.value)}
-            aria-label="Filter by department"
+            aria-label={t('maintenance.tickets.aria.filterDepartment')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           >
-            <option value="">All Departments</option>
+            <option value="">{t('maintenance.tickets.filter.allDepartments')}</option>
             {departments.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
@@ -218,10 +220,10 @@ export default function MaintenanceTicketList() {
           <select
             value={filters.category}
             onChange={(e) => setFilter('category', e.target.value)}
-            aria-label="Filter by category"
+            aria-label={t('maintenance.tickets.aria.filterCategory')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           >
-            <option value="">All Categories</option>
+            <option value="">{t('maintenance.tickets.filter.allCategories')}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
@@ -232,8 +234,8 @@ export default function MaintenanceTicketList() {
               type="text"
               value={filters.location}
               onChange={(e) => setFilter('location', e.target.value)}
-              placeholder="Location..."
-              aria-label="Filter by location"
+              placeholder={t('maintenance.tickets.filter.locationPlaceholder')}
+              aria-label={t('maintenance.tickets.aria.filterLocation')}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
             />
           </div>
@@ -241,41 +243,41 @@ export default function MaintenanceTicketList() {
             type="date"
             value={filters.date}
             onChange={(e) => setFilter('date', e.target.value)}
-            aria-label="Filter by date"
+            aria-label={t('maintenance.tickets.aria.filterDate')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           />
           <select
             value={filters.assigned_to}
             onChange={(e) => setFilter('assigned_to', e.target.value)}
-            aria-label="Filter by assigned technician"
+            aria-label={t('maintenance.tickets.aria.filterTechnician')}
             className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
           >
-            <option value="">All Technicians</option>
-            {technicians.map((t) => (
-              <option key={t.id} value={t.id}>{t.name}</option>
+            <option value="">{t('maintenance.tickets.filter.allTechnicians')}</option>
+            {technicians.map((tech) => (
+              <option key={tech.id} value={tech.id}>{tech.name}</option>
             ))}
           </select>
         </div>
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm text-orange-600 hover:text-orange-800"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm text-orange-soft-text hover:text-orange-soft-text"
           >
-            <FilterX className="w-4 h-4" /> Clear filters
+            <FilterX className="w-4 h-4" /> {t('common.myAssigned.clearFilters')}
           </button>
         )}
       </div>
 
       {canAssign && selected.length > 0 && (
-        <div className="flex items-center justify-between bg-orange-50 border border-orange-200 rounded-lg px-4 py-3">
-          <span className="text-sm font-medium text-orange-800">{selected.length} ticket{selected.length === 1 ? '' : 's'} selected</span>
+        <div className="flex items-center justify-between bg-orange-soft border border-orange-soft-border rounded-lg px-4 py-3">
+          <span className="text-sm font-medium text-orange-soft-text">{t('maintenance.tickets.bulk.selected', { count: selected.length })}</span>
           <div className="flex items-center gap-2">
-            <button onClick={() => setSelected([])} className="text-sm text-gray-600 hover:text-gray-800">Clear</button>
+            <button onClick={() => setSelected([])} className="text-sm text-gray-600 hover:text-gray-800">{t('common.actions.clear')}</button>
             <button
               onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700"
             >
-              <UserCheck className="w-4 h-4" /> Assign selected
+              <UserCheck className="w-4 h-4" /> {t('maintenance.tickets.bulk.assignSelected')}
             </button>
           </div>
         </div>
@@ -284,24 +286,24 @@ export default function MaintenanceTicketList() {
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
-        <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+        <div className="bg-surface rounded-xl border border-red-soft-border p-8 text-center">
           <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-3" />
           <p className="text-gray-600 font-medium">{error}</p>
           <button
             onClick={() => { setPage(1); loadTickets(); }}
             className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700"
           >
-            <RefreshCw className="w-4 h-4" /> Retry
+            <RefreshCw className="w-4 h-4" /> {t('common.actions.retry')}
           </button>
         </div>
       ) : tickets.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="No maintenance tickets found"
-          subtitle={hasFilters ? 'Try adjusting your filters' : 'New requests will appear here'}
+          title={t('maintenance.tickets.empty.title')}
+          subtitle={hasFilters ? t('common.myAssigned.empty.filteredSubtitle') : t('maintenance.tickets.empty.subtitle')}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-xl border border-gray-200 overflow-hidden">
           <TicketTable
             tickets={tickets}
             type="maintenance"

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 function pageNumbers(current, total) {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -13,6 +14,7 @@ function pageNumbers(current, total) {
 }
 
 export default function Pagination({ page, total, limit = 20, onPageChange }) {
+  const { t } = useTranslation();
   if (!total || total <= 0) return null;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   if (totalPages <= 1) return null;
@@ -23,13 +25,13 @@ export default function Pagination({ page, total, limit = 20, onPageChange }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-gray-200">
       <p className="text-sm text-gray-500">
-        Showing <span className="font-medium text-gray-700">{from}–{to}</span> of <span className="font-medium text-gray-700">{total}</span>
+        {t('common.pagination.showing', { from, to, total })}
       </p>
-      <nav aria-label="Pagination" className="flex items-center gap-1">
+      <nav aria-label={t('common.pagination.label')} className="flex items-center gap-1">
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          aria-label="Previous page"
+          aria-label={t('common.pagination.previous')}
           className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -41,7 +43,7 @@ export default function Pagination({ page, total, limit = 20, onPageChange }) {
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              aria-label={`Page ${p}`}
+              aria-label={t('common.pagination.page', { page: p })}
               aria-current={p === page ? 'page' : undefined}
               className={`w-8 h-8 rounded-lg text-sm font-medium ${
                 p === page
@@ -56,7 +58,7 @@ export default function Pagination({ page, total, limit = 20, onPageChange }) {
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          aria-label="Next page"
+          aria-label={t('common.pagination.next')}
           className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronRight className="w-4 h-4" />

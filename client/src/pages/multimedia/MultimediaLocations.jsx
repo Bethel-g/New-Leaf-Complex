@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Building2, Pencil, Trash2, Loader2, ChevronRight } from 'lucide-react';
 import api from '../../services/api';
+import { useTranslation } from '../../i18n';
 import Modal from '../../components/Modal';
 import { Badge } from '../../components/Badge';
 import { EmptyState, LoadingSpinner } from '../../components/EmptyState';
 import { useAuth } from '../../context/AuthContext';
+import { levelText } from './multimediaHelpers';
 
 const LEVELS = ['campus', 'building', 'floor', 'ward', 'location', 'room'];
 
 export default function MultimediaLocations() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = ['it_supervisor', 'admin', 'sys_admin'].includes(user?.role_name);
 
@@ -40,33 +43,33 @@ export default function MultimediaLocations() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return toast.error('Location name is required');
+    if (!form.name.trim()) return toast.error(t('multimedia.locations.toast.nameRequired'));
     setSaving(true);
     try {
       if (editing) {
         await api.put(`/multimedia/locations/${editing.id}`, form);
-        toast.success('Location updated');
+        toast.success(t('multimedia.locations.toast.updated'));
       } else {
         await api.post('/multimedia/locations', form);
-        toast.success('Location created');
+        toast.success(t('multimedia.locations.toast.created'));
       }
       setModal(false);
       load();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Save failed');
+      toast.error(err.response?.data?.message || t('multimedia.locations.toast.saveFailed'));
     } finally {
       setSaving(false);
     }
   };
 
   const destroy = async (l) => {
-    if (!window.confirm(`Delete "${l.name}"? Devices attached to it will be unassigned.`)) return;
+    if (!window.confirm(t('multimedia.locations.deleteConfirm', { name: l.name }))) return;
     try {
       await api.delete(`/multimedia/locations/${l.id}`);
-      toast.success('Location deleted');
+      toast.success(t('multimedia.locations.toast.deleted'));
       load();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Delete failed');
+      toast.error(err.response?.data?.message || t('multimedia.locations.toast.deleteFailed'));
     }
   };
 
@@ -77,21 +80,21 @@ export default function MultimediaLocations() {
       <div key={loc.id}>
         <div className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg" style={{ marginLeft: depth * 20 }}>
           <ChevronRight className="w-4 h-4 text-gray-300" />
-          <Building2 className="w-4 h-4 text-primary-600 shrink-0" />
+          <Building2 className="w-4 h-4 text-brand-text shrink-0" />
           <span className="text-sm font-medium text-gray-800">{loc.name}</span>
-          <Badge color="gray">{loc.level}</Badge>
-          <span className="text-xs text-gray-400">{loc.device_count || 0} devices</span>
-          {children.length > 0 && <span className="text-xs text-gray-400">{children.length} child</span>}
+          <Badge color="gray">{levelText(loc.level, t)}</Badge>
+          <span className="text-xs text-gray-400">{t('multimedia.locations.devicesCount', { count: loc.device_count || 0 })}</span>
+          {children.length > 0 && <span className="text-xs text-gray-400">{t('multimedia.locations.childCount', { count: children.length })}</span>}
           {canManage && (
             <div className="ml-auto flex items-center gap-1">
-              <button onClick={() => openCreate(loc)} className="p-1.5 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg" title="Add child location">
+              <button onClick={() => openCreate(loc)} className="p-1.5 text-gray-500 hover:text-brand-text hover:bg-primary-soft rounded-lg" title={t('multimedia.locations.action.addChild')}>
                 <Plus className="w-4 h-4" />
               </button>
-              <button onClick={() => openEdit(loc)} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg" title="Edit location">
+              <button onClick={() => openEdit(loc)} className="p-1.5 text-gray-500 hover:text-indigo-soft-text hover:bg-indigo-soft rounded-lg" title={t('multimedia.locations.action.edit')}>
                 <Pencil className="w-4 h-4" />
               </button>
               {deletable && (
-                <button onClick={() => destroy(loc)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg" title="Delete location">
+                <button onClick={() => destroy(loc)} className="p-1.5 text-gray-500 hover:text-red-soft-text hover:bg-red-soft rounded-lg" title={t('multimedia.locations.action.delete')}>
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
@@ -111,55 +114,55 @@ export default function MultimediaLocations() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Locations</h2>
-          <p className="text-gray-500 text-sm">Hierarchy of physical sites where displays are installed</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('multimedia.locations.title')}</h2>
+          <p className="text-gray-500 text-sm">{t('multimedia.locations.subtitle')}</p>
         </div>
         {canManage && (
           <button onClick={() => openCreate(null)} className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
-            <Plus className="w-4 h-4" /> Add Location
+            <Plus className="w-4 h-4" /> {t('multimedia.locations.add')}
           </button>
         )}
       </div>
 
       {roots.length === 0 ? (
-        <EmptyState title="No locations defined" />
+        <EmptyState title={t('multimedia.locations.empty')} />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-3">
+        <div className="bg-surface rounded-xl border border-gray-200 p-3">
           {roots.map((r) => renderTree(r))}
         </div>
       )}
 
-      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Edit Location' : 'Add Location'}>
+      <Modal open={modal} onClose={() => setModal(false)} title={editing ? t('multimedia.locations.modal.edit') : t('multimedia.locations.modal.add')}>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Outpatient Waiting Area" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('multimedia.locations.form.name')} *</label>
+            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('multimedia.locations.form.namePlaceholder')} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('multimedia.locations.form.level')}</label>
               <select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                {LEVELS.map((lv) => <option key={lv} value={lv}>{lv}</option>)}
+                {LEVELS.map((lv) => <option key={lv} value={lv}>{levelText(lv, t)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Parent</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('multimedia.locations.form.parent')}</label>
               <select value={form.parent_id} onChange={(e) => setForm({ ...form, parent_id: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
-                <option value="">— none (root) —</option>
+                <option value="">{t('multimedia.locations.form.parent.none')}</option>
                 {editing && editing.parent_id ? null : locations.filter((l) => l.id !== editing?.id).map((l) => (
-                  <option key={l.id} value={l.id}>{l.level} · {l.name}</option>
+                  <option key={l.id} value={l.id}>{levelText(l.level, t)} · {l.name}</option>
                 ))}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('multimedia.locations.form.notes')}</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
           </div>
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={() => setModal(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+            <button type="button" onClick={() => setModal(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">{t('common.actions.cancel')}</button>
             <button type="submit" disabled={saving} className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-60">
-              {saving && <Loader2 className="w-4 h-4 animate-spin" />} Save
+              {saving && <Loader2 className="w-4 h-4 animate-spin" />} {t('common.actions.save')}
             </button>
           </div>
         </form>
