@@ -39,6 +39,7 @@ import MultimediaSchedules from './pages/multimedia/MultimediaSchedules';
 import MultimediaHistory from './pages/multimedia/MultimediaHistory';
 import MultimediaCommands from './pages/multimedia/MultimediaCommands';
 import MultimediaSettings from './pages/multimedia/MultimediaSettings';
+import VirtualTVPlayer from './pages/multimedia/VirtualTVPlayer';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -126,7 +127,10 @@ function AppRoutes() {
         <Route path="multimedia/history" element={<RoleRoute roles={['it_staff', 'it_supervisor', 'admin', 'sys_admin']}><MultimediaHistory /></RoleRoute>} />
         <Route path="multimedia/commands" element={<RoleRoute roles={['it_supervisor', 'admin', 'sys_admin']}><MultimediaCommands /></RoleRoute>} />
         <Route path="multimedia/settings" element={<RoleRoute roles={['it_supervisor', 'admin', 'sys_admin']}><MultimediaSettings /></RoleRoute>} />
+        {/* Virtual TV */}
+        <Route path="virtual-tv/:id" element={<VirtualTVPlayer />} />
       </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

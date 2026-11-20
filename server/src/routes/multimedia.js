@@ -210,6 +210,8 @@ const DEVICE_SELECT = [
   'multimedia_locations.level as location_level',
   'departments.name as department_name',
   'media_assets.title as current_media_title',
+  'media_assets.category as current_media_category',
+  'media_assets.mime_type as current_media_mime_type',
 ];
 
 router.get('/devices', async (req, res) => {
@@ -456,6 +458,43 @@ router.post('/devices/:id/command',
       await mm.audit(req.user.id, 'device_command', 'multimedia_device', device.id, { command, result: result.status });
 
       res.json({ message: result.message, status: result.status, command_id: row.id });
+    } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+  // NEW: HTTP-based Smart TV control (Philips, Samsung, LG, etc.)
+  // This sends commands directly to the TV's IP address via HTTP
+  // Useful for Smart TVs that have built-in web-based media players
+  router.post('/devices/:id/http-control', async (req, res) => {
+    try {
+      const device = await db('multimedia_devices').where('id', req.params.id).first();
+      if (!device) return res.status(404).json({ message: 'Device not found' });
+      if (!device.ip_address) return res.status(400).json({ message: 'Device has no IP address configured' });
+
+      const command = (req.body.command || '').toLowerCase();
+      if (command !== 'play' && command !== 'stop') {
+        return res.status(400).json({ message: 'Invalid command. Use "play" or "stop"' });
+      }
+
+      const mm = require('../services/multimediaDeviceService');
+      const result = await mm.httpTvControl(device, command);
+
+      if (result.status === 'info') {
+        // HTTP URL generated - return it for client-side fetching
+        return res.json({
+          status: 'info',
+          message: 'HTTP control URL generated for TV',
+          http_url: result.httpUrl,
+          notes: 'JavaScript on the client should fetch this URL to control the TV set-top player'
+        });
+      }
+
+      return res.json({
+        status: result.status || 'error',
+        message: result.message || 'HTTP TV control failed',
+        http_url: result.httpUrl
+      });
     } catch (error) {
       res.status(500).json({ message: 'Server error' });
     }

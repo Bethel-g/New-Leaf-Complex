@@ -16,6 +16,28 @@ describe('Authentication', () => {
       }
     });
 
+    it('allows a user without a department to log in and load their profile', async () => {
+      const email = ROLES.staff;
+      const [user] = await db('users').where({ email }).select('id', 'department_id');
+      await db('users').where({ id: user.id }).update({ department_id: null });
+
+      try {
+        const loginResponse = await request
+          .post('/api/auth/login')
+          .send({ email, password: DEFAULT_PASSWORD });
+        expect(loginResponse.status).toBe(200);
+        expect(loginResponse.body.user.department_name).toBeNull();
+
+        const profileResponse = await request
+          .get('/api/auth/me')
+          .set('Authorization', `Bearer ${loginResponse.body.token}`);
+        expect(profileResponse.status).toBe(200);
+        expect(profileResponse.body.department_name).toBeNull();
+      } finally {
+        await db('users').where({ id: user.id }).update({ department_id: user.department_id });
+      }
+    });
+
     it('rejects a wrong password', async () => {
       const r = await request
         .post('/api/auth/login')

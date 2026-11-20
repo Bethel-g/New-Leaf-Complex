@@ -31,11 +31,11 @@ npx vitest run test/workflows.test.js
 - `vitest.config.mjs` disables file parallelism and each file re-migrates/re-seeds via
   `test/setup.js`, so suites are order-independent and standalone.
 
-## Functional suites (6 files, 47 tests)
+## Functional suites (6 files, 48 tests)
 
 | Suite | File | What it covers |
 | --- | --- | --- |
-| Auth | `test/auth.test.js` | Login for every seeded role, wrong password, unknown email, deactivated account, validation, logout idempotency, `/me`, missing/tampered/deactivated tokens, password-change rules |
+| Auth | `test/auth.test.js` | Login for every seeded role and users without a department, wrong password, unknown email, deactivated account, validation, logout idempotency, `/me`, missing/tampered/deactivated tokens, password-change rules |
 | RBAC | `test/rbac.test.js` | Full permission matrix across roles (tickets, suggestions, dashboard, notifications, users, admin/system endpoints), 401/403 on protected routes, admin vs sys_admin boundaries |
 | Dashboard | `test/dashboard.test.js` | Role-scoped dashboard stats computed against known seeded records; requires authentication |
 | Security | `test/security.test.js` | Cross-team assignment, cross-type status, deactivated assignees, category-type mismatch, suggestions list scoping/IDOR, upload authz-before-write + executable/SVG/MIME spoof rejection, credential/contact leakage in lists, SQL-injection + stored-XSS payloads, brute-force lockout, 404s for nonexistent records |

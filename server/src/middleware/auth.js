@@ -19,7 +19,7 @@ const USER_COLUMNS = [
 function fetchUserById(id) {
   return db('users')
     .join('roles', 'users.role_id', 'roles.id')
-    .join('departments', 'users.department_id', 'departments.id')
+    .leftJoin('departments', 'users.department_id', 'departments.id')
     .where('users.id', id)
     .select(USER_COLUMNS)
     .first();

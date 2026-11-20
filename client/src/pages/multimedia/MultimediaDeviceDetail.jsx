@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { RefreshCw, Loader2, Play, Square, MapPin, Fingerprint, Network, Cpu, ShieldAlert } from 'lucide-react';
 import api from '../../services/api';
@@ -12,17 +12,20 @@ import { deviceStatusColor, playbackStatusColor, formatDateTime, statusText, con
 export default function MultimediaDeviceDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const canManage = ['it_supervisor', 'admin', 'sys_admin'].includes(user?.role_name);
 
   const [device, setDevice] = useState(null);
   const [commands, setCommands] = useState([]);
+  const [mediaAssets, setMediaAssets] = useState([]);
+  const [selectedMediaId, setSelectedMediaId] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(() => {
-    setLoading(true);
+  const load = useCallback((showLoading = true) => {
+    if (showLoading) setLoading(true);
     Promise.all([
       api.get(`/multimedia/devices/${id}`),
       api.get(`/multimedia/devices/${id}/commands`),
@@ -31,7 +34,15 @@ export default function MultimediaDeviceDetail() {
       .catch(() => setLoading(false));
   }, [id]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(false); }, [load]);
+
+  useEffect(() => {
+    api.get('/multimedia/media', { params: { status: 'all', limit: 500 } })
+      .then((res) => setMediaAssets(res.data.items || []))
+      .catch((err) => {
+        toast.error(err.response?.data?.message || t('multimedia.deviceDetail.sendCommand.mediaLoadFailed'));
+      });
+  }, [t]);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -40,11 +51,18 @@ export default function MultimediaDeviceDetail() {
   };
 
   const sendCommand = async (command, mediaId) => {
+    if (command === 'play' && !mediaId) {
+      toast.error(t('multimedia.deviceDetail.sendCommand.selectMedia'));
+      return;
+    }
     setSending(command);
     try {
-      const res = await api.post(`/multimedia/devices/${id}/command`, command === 'play' ? { command, media_id: mediaId } : { command });
+      const res = await api.post(`/multimedia/devices/${id}/command`, command === 'play' ? { command, media_id: Number(mediaId) } : { command });
       toast.success(res.data.message || t('multimedia.deviceDetail.toast.acknowledged'));
       load();
+      if (command === 'play' && res.data.status === 'succeeded') {
+        navigate(`/virtual-tv/${id}`);
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || t('multimedia.deviceDetail.toast.failed'));
       load();
@@ -108,10 +126,23 @@ export default function MultimediaDeviceDetail() {
             <p className="text-xs text-gray-500 mt-1">{t('multimedia.deviceDetail.sendCommand.subtitle')}</p>
           </div>
           <div className="p-5">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('multimedia.deviceDetail.sendCommand.media')}
+            </label>
+            <select
+              value={selectedMediaId || (device.current_media_id ? String(device.current_media_id) : '')}
+              onChange={(event) => setSelectedMediaId(event.target.value)}
+              className="w-full mb-4 px-3 py-2 rounded-lg border border-gray-300 text-sm"
+            >
+              <option value="">{t('multimedia.deviceDetail.sendCommand.selectMedia')}</option>
+              {mediaAssets.map((media) => (
+                <option key={media.id} value={media.id}>{media.title}</option>
+              ))}
+            </select>
             <div className="flex gap-3">
               <button
-                onClick={() => sendCommand('play')}
-                disabled={!online || !supported.includes('play') || device.status === 'playing'}
+                onClick={() => sendCommand('play', selectedMediaId || device.current_media_id)}
+                disabled={!online || !supported.includes('play') || sending === 'play'}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {sending === 'play' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} {t('multimedia.deviceDetail.sendCommand.play')}

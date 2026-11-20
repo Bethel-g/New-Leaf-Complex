@@ -56,6 +56,11 @@
   --color-brand-text-strong: var(--color-primary-700);
   --color-brand-text-deep: var(--color-primary-800);
 
+/* Brand gradient: blue dominant with green accent */
+  --color-brand-gradient: linear-gradient(135deg, #3b82f6 0%, #10b981 50%, #3b82f6 100%);
+  --color-brand-gradient-reverse: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #10b981 100%);
+  
+
   /* Brand tints */
   --color-primary-soft: #eff6ff;
   --color-primary-soft-strong: #dbeafe;
@@ -418,6 +423,14 @@ html[data-lang="am"] body {
 ::selection {
   background-color: var(--color-primary-600);
   color: #fff;
+}
+
+/* Brand gradient utilities */
+.bg-brand-gradient {
+  background-image: var(--color-brand-gradient);
+}
+.bg-brand-gradient-reverse {
+  background-image: var(--color-brand-gradient-reverse);
 }
 
 /* Subtle, modern scrollbars */

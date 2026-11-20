@@ -270,12 +270,89 @@ Two scripts in `server/scripts/` drive the whole workflow against a running API:
 ```bash
 cd server
 npm run test:mm          # end-to-end workflow test (78 assertions, cleans up after itself)
+  • Registers a device → Heartbeat → Uploads media → Broadcasts → Plays media → Stops →
+    Groups → Schedules → Offline handling → History/Audit/Commands → RBAC → Disables/Enables
+  • Exits 0 = every step passed, 1 = at least one step failed
+  • Cleans up all test rows (devices, media, groups, schedules, history, commands) after run
+
 npm run sim:device -- --identifier TV-001 --secret nl-dev-xxx   # a TV that heartbeats and logs commands
+  • Starts a simulated TV player that polls `/api/multimedia/devices/heartbeat` every 30 seconds
+  • Logs received commands (play/stop) and status changes (online/idle/offline)
+  • Use `--once` flag for a single heartbeat exit
+  • Use `--offline-after N` to simulate TV power-off after N seconds
+  • Use `--token <jwt>` to also download media files the server tells it to play
 ```
 
-See [TESTING.md](TESTING.md#manual-testing-of-the-multimedia-module-one-simulated-tv) for the
-full manual walkthrough and the known gotchas (seeded devices have no secret, seeded media rows
-have no file on disk, schedules run on demand).
+#### E2E Test Detail (78 assertions across 14 sections)
+
+| Section | What it tests |
+| --- | --- |
+| **1. Authentication & capabilities** | Login, capabilities endpoint, mock-player integration |
+| **2. Device registration** | Register device, get identifier+secret, duplicate rejection |
+| **3. Heartbeat contract** | Heartbeat accepted, device comes online, supported commands, credential rejection |
+| **4. Media library** | Upload PNG, stream file, archive/draft/archive flow |
+| **5. Broadcast to device** | Single device broadcast, play command, media file URL |
+| **6. Media file delivery** | Authenticated file serving, 401 for anonymous |
+| **7. Device commands** | play/stop success, unsupported commands (power → 400/not_supported), command logging |
+| **8. Group targeting** | Create group with devices, group broadcast, remove device, empty group refusal |
+| **9. Scheduled playback** | Schedule creation, on-demand processing, pause/resume/end, daily/specific_days |
+| **10. Stop playback** | Stop broadcast, device returns to idle |
+| **11. Offline device handling** | Stale heartbeat → offline, broadcast reports offline, offline commands refused, heartbeat restores online |
+| **12. History, audit & command log** | History rows for device, audit entries for register/broadcast/command, dashboard aggregates |
+| **13. RBAC** | Role restrictions (nurse→403, it_staff view/commands with setting), setting toggle |
+| **14. Disable & enable** | Device disable, heartbeat rejected (403), device enable, heartbeat works after |
+
+### Manual Testing Steps (one simulated TV)
+
+1. **Start the API**: `cd server && npm run dev`
+2. **Run the E2E test**: `npm run test:mm` (78 assertions, auto-cleanup)
+3. **Or run the device simulator**: `npm run sim:device -- --identifier TV-001 --secret nl-dev-test-secret`
+   - Watch the console for `[player] status=online [PLAY] "..."` messages
+   - Press Ctrl+C to stop
+4. **Optional: Test offline mode**
+   - `npm run sim:device -- --identifier TV-001 --secret nl-dev-test-secret --offline-after 60`
+   - Device will stop heartbeating after 60 seconds and be marked offline
+
+### Known Gotchas (from TESTING.md)
+
+- Seeded devices (TV-001 through TV-006) were created **without** a `device_secret_hash` —
+  they need the fix applied (see the `device_secret_hash` update in the setup scripts)
+- Seeded media rows have `file_path` pointing to disk files that don't exist until you upload
+- Schedules run on demand via `POST /api/multimedia/schedules/process` — they are not triggered
+  by a background worker
+- TV-001 through TV-06 were seeded `offline` with stale heartbeats; use the simulator or
+  register a fresh device to test the online flow
+
+### API Surface Summary (Multimedia)
+
+| Endpoint | Auth | Description |
+| --- | --- | --- |
+| `GET /api/multimedia/capabilities` | Public | Integration manifest (play/stop only) |
+| `GET /api/multimedia/devices` | JWT + view | List devices with status/location/media |
+| `POST /api/multimedia/devices` | JWT + manage | Register new device (gets one-time secret) |
+| `POST /api/multimedia/devices/heartbeat` | Device creds (X-Identifier/X-Secret) | Heartbeat → online/offline + pending commands |
+| `GET /api/multimedia/devices/:id` | JWT + view | Device detail + capabilities |
+| `PUT /api/multimedia/devices/:id` | JWT + manage | Update device fields |
+| `POST /api/multimedia/devices/:id/command` | JWT + allow | Send play/stop/power command |
+| `POST /api/multimedia/broadcast` | JWT + allow | Broadcast media to device/group/all |
+| `POST /api/multimedia/broadcast/stop` | JWT + allow | Stop playback on device/group/all |
+| `POST /api/multimedia/schedules` | JWT + manage | Create scheduled playback |
+| `POST /api/multimedia/schedules/process` | JWT + manage | Process due schedules on demand |
+| `POST /api/multimedia/schedules/:id/pause` | JWT + manage | Pause a schedule |
+| `POST /api/multimedia/schedules/:id/resume` | JWT + manage | Resume a paused schedule |
+| `POST /api/multimedia/schedules/:id/end` | JWT + manage | End a schedule |
+| `GET /api/multimedia/history` | JWT + view | Playback history for a device |
+| `GET /api/multimedia/dashboard` | JWT + view | Totals (online/offline/playing/media counts) |
+| `GET /api/multimedia/commands` | JWT + view | Command log for a device |
+| `GET /api/multimedia/audit` | JWT + view | Full audit log |
+| `POST /api/multimedia/groups` | JWT + manage | Create device group |
+| `POST /api/multimedia/media` | JWT + upload | Upload image/video media |
+| `GET /api/multimedia/media/:id` | JWT + view | Media metadata |
+| `GET /api/multimedia/media/:id/file` | JWT + download | Stream media file |
+| `POST /api/multimedia/media/:id/activate` | JWT + manage | Activate/deactivate media |
+| `POST /api/multimedia/media/:id/archive` | JWT + manage | Archive media |
+| `PUT /api/multimedia/settings/:key` | JWT + sys_admin | Update system setting |
+| `GET /api/multimedia/settings` | JWT + view | List all settings |
 
 ## Frontend shell
 

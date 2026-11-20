@@ -77,7 +77,7 @@ router.post('/login',
 
       const user = await db('users')
         .join('roles', 'users.role_id', 'roles.id')
-        .join('departments', 'users.department_id', 'departments.id')
+        .leftJoin('departments', 'users.department_id', 'departments.id')
         .where('users.email', email)
         .select('users.*', 'roles.name as role_name', 'departments.name as department_name')
         .first();
